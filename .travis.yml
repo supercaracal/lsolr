@@ -13,5 +13,5 @@ before_install:
   - "gem install rubocop"
 script:
   - "bundle install --path=.bundle"
-  - "ruby -w -Itest test/lsolr_test.rb"
+  - "ruby -w -I test -I lib test/lsolr_test.rb"
   - "rubocop --fail-level=W ."
