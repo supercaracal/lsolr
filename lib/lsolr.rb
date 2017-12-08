@@ -124,7 +124,7 @@ class LSolr
   # @return [LSolr] self instance
   def phrase_match(values, distance: 0)
     value = values.map { |v| clean(v) }.join(REPLACEMENT_CHAR)
-    proximity_match = distance.positive? ? "#{PROXIMITY}#{distance}" : ''
+    proximity_match = distance > 0 ? "#{PROXIMITY}#{distance}" : ''
     @value = %("#{value}"#{proximity_match})
     self
   end

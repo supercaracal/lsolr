@@ -13,3 +13,6 @@ Metrics/ClassLength:
 
 Metrics/LineLength:
   Max: 150
+
+Style/NumericPredicate:
+  Enabled: false
