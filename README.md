@@ -1,4 +1,5 @@
 [![Build Status](https://travis-ci.org/supercaracal/lsolr.svg?branch=master)](https://travis-ci.org/supercaracal/lsolr)
+[![Gem Version](https://badge.fury.io/rb/lsolr.svg)](https://badge.fury.io/rb/lsolr)
 
 # LSolr
 A query builder of Apache Solr standard Lucene type query for Ruby.
