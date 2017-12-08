@@ -56,7 +56,7 @@ class LSolr
     raise 'Please specify a search condition.' if blank?
 
     expr = "#{left_parentheses.join}#{@not}#{@field}:#{@value}#{right_parentheses.join}"
-    expr = "#{prev} #{operator} #{expr}" if prev&.present?
+    expr = "#{prev} #{operator} #{expr}" if !prev.nil? && prev.present?
     "#{expr}#{@boost}"
   end
 
@@ -133,7 +133,7 @@ class LSolr
   # @param distance [Float] proximity distance
   # @return [LSolr] self instance
   def fuzzy_match(value, distance: 0.0)
-    raise RangeError, "Out of #{FUZZY_MATCH_DISTANCE_RANGE}. #{distance} given." unless (FUZZY_MATCH_DISTANCE_RANGE).member?(distance)
+    raise RangeError, "Out of #{FUZZY_MATCH_DISTANCE_RANGE}. #{distance} given." unless FUZZY_MATCH_DISTANCE_RANGE.member?(distance)
     @value = "#{clean(value)}#{PROXIMITY}#{distance}"
     self
   end
@@ -181,7 +181,7 @@ class LSolr
   private
 
   def initialize_copy(obj)
-    obj.prev = obj.prev.dup if obj.prev&.present?
+    obj.prev = obj.prev.dup if !obj.prev.nil? && obj.prev.present?
     obj.left_parentheses = obj.left_parentheses.dup
     obj.right_parentheses = obj.right_parentheses.dup
   end
@@ -207,7 +207,7 @@ class LSolr
   end
 
   def take_head(element)
-    while element.prev&.present? do element = element.prev end
+    while !element.prev.nil? && element.prev.present? do element = element.prev end
     element
   end
 end

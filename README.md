@@ -4,7 +4,7 @@
 # LSolr
 A query builder of Apache Solr standard Lucene type query for Ruby.
 
-# How to use
+## How to use
 
 ```ruby
 monoclinic = LSolr.new(:crystal_system).match(:monoclinic)
@@ -18,3 +18,7 @@ diamond = cubic.and(hard).wrap
 phosphophyllite.or(diamond).to_s
 #=> '(crystal_system:monoclinic AND mohs_scale:[* TO 5.0}) OR (crystal_system:cubic AND mohs_scale:[5.0 TO 10.0])'
 ```
+
+## See also
+* [RubyDoc](http://www.rubydoc.info/github/supercaracal/lsolr/master)
+* [GemGuide](http://guides.rubygems.org/make-your-own-gem/)
