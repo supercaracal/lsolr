@@ -1,0 +1,15 @@
+---
+# https://rubocop.readthedocs.io/en/latest/
+AllCops:
+  TargetRubyVersion: 2.4
+  DisplayCopNames: true
+
+Metrics/AbcSize:
+  Exclude:
+    - 'test/**/*'
+
+Metrics/ClassLength:
+  Max: 300
+
+Metrics/LineLength:
+  Max: 150

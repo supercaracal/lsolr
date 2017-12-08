@@ -1,0 +1,21 @@
+PATH
+  remote: .
+  specs:
+    lsolr (0.0.0)
+
+GEM
+  remote: https://rubygems.org/
+  specs:
+    power_assert (1.1.1)
+    test-unit (3.2.6)
+      power_assert
+
+PLATFORMS
+  ruby
+
+DEPENDENCIES
+  lsolr!
+  test-unit
+
+BUNDLED WITH
+   1.16.0
