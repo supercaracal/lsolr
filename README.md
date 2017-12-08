@@ -4,9 +4,17 @@
 # LSolr
 A query builder of Apache Solr standard Lucene type query for Ruby.
 
-## How to use
+## Installation
+
+```
+$ gem install lsolr
+```
+
+## Example
 
 ```ruby
+require 'lsolr'
+
 monoclinic = LSolr.new(:crystal_system).match(:monoclinic)
 cubic = LSolr.new(:crystal_system).match(:cubic)
 soft = LSolr.new(:mohs_scale).greater_than_or_equal_to('*').less_than(5.0)
