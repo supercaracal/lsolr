@@ -30,5 +30,5 @@ phosphophyllite.or(diamond).to_s
 ## See also
 * [The Standard Query Parser](https://lucene.apache.org/solr/guide/7_1/the-standard-query-parser.html)
 * [RSolr](https://github.com/rsolr/rsolr)
-* [Ruby Doc](http://www.rubydoc.info/github/supercaracal/lsolr/master)
+* [Ruby Doc](http://www.rubydoc.info/github/supercaracal/lsolr/LSolr)
 * [Gem Guide](http://guides.rubygems.org/make-your-own-gem/)
