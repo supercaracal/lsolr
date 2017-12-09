@@ -71,7 +71,7 @@ class LSolrTest < Test::Unit::TestCase
 
   def test_prefix_match
     assert_equal 'field:Soo*o??olr', LSolr.new(:field).prefix_match('Soo*o??olr').to_s
-    assert_equal 'field:Sooo?ooolr', LSolr.new(:field).prefix_match('Sooo|ooolr').to_s
+    assert_equal 'field:Sooo*ooolr', LSolr.new(:field).prefix_match('Sooo&|ooolr').to_s
   end
 
   def test_phrase_match

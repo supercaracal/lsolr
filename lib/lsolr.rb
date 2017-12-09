@@ -24,6 +24,7 @@ class LSolr
   GREATER_THAN_OR_EQUAL_TO = '['
   LESS_THAN_OR_EQUAL_TO = ']'
 
+  WILD_CARD = '*'
   PROXIMITY = '~'
   BOOST = '^'
   FUZZY_MATCH_DISTANCE_RANGE = (0.0..2.0).freeze
@@ -150,7 +151,7 @@ class LSolr
   #
   # @return [LSolr] self instance
   def prefix_match(value)
-    @value = clean(value, symbols: RESERVED_SYMBOLS - %w[* ?]).split.join('?')
+    @value = clean(value, symbols: RESERVED_SYMBOLS - %w[* ?]).split.join(WILD_CARD)
     self
   end
 

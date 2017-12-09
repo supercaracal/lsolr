@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    lsolr (0.0.4)
+    lsolr (0.0.5)
 
 GEM
   remote: https://rubygems.org/
