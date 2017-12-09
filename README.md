@@ -30,7 +30,7 @@ params = {
   term05: true,
   term06: false,
   term07: Date.new(7000, 7, 1),
-  term08: DateTime.new(6000, 5, 31, 6, 31, 43), # rubocop:disable Style/DateTime
+  term08: DateTime.new(6000, 5, 31, 6, 31, 43),
   term09: Time.new(5000, 6, 30, 12, 59, 3),
   term10: LSolr.new(:term10).fuzzy_match('foo'),
   term11: [1, 2, 3],
