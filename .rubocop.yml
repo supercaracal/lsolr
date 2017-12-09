@@ -9,7 +9,11 @@ Metrics/AbcSize:
     - 'test/**/*'
 
 Metrics/ClassLength:
-  Max: 300
+  Max: 400
+
+Metrics/MethodLength:
+  Exclude:
+    - 'test/**/*'
 
 Metrics/LineLength:
   Max: 200
