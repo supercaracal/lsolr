@@ -13,11 +13,15 @@ $ gem install lsolr
 ## Example
 
 ```ruby
+require 'lsolr'
+
 LSolr.build(term1: 'hoge', term2: true).to_s
 #=> 'term1:hoge AND term2:true'
 ```
 
 ```ruby
+require 'lsolr'
+
 params = {
   term01: 'hoge',
   term02: :fuga,
