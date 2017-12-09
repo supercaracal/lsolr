@@ -52,6 +52,9 @@ class LSolrTest < Test::Unit::TestCase
   def test_boost
     assert_equal 'field:word^1.5', LSolr.new(:field).match('word').boost(1.5).to_s
     assert_equal 'field:word^1.5', LSolr.new(:field).boost(1.5).match('word').to_s
+    assert_equal 'field:word^0.1', LSolr.new(:field).boost(0.1).match('word').to_s
+    assert_raise(ArgumentError, 'The boost factor numver must be positive. 0.0 given.') { LSolr.new(:field).match('word').boost(0.0) }
+    assert_raise(ArgumentError, 'The boost factor numver must be positive. -0.1 given.') { LSolr.new(:field).match('word').boost(-0.1) }
   end
 
   def test_match
@@ -68,16 +71,22 @@ class LSolrTest < Test::Unit::TestCase
 
   def test_prefix_match
     assert_equal 'field:Soo*o??olr', LSolr.new(:field).prefix_match('Soo*o??olr').to_s
+    assert_equal 'field:Sooo?ooolr', LSolr.new(:field).prefix_match('Sooo|ooolr').to_s
   end
 
   def test_phrase_match
     assert_equal 'field:"word1 word2"', LSolr.new(:field).phrase_match(%w[word1 word2]).to_s
+    assert_equal 'field:"word1 word2"~10', LSolr.new(:field).phrase_match(%w[word1 word2], distance: 10).to_s
+    assert_equal 'field:"boo foo woo"~10', LSolr.new(:field).phrase_match(%w[boo&foo woo], distance: 10).to_s
   end
 
   def test_fuzzy_match
-    assert_equal 'field:word~0.1', LSolr.new(:field).fuzzy_match('word', distance: 0.1).to_s
+    assert_equal 'field:word~0.0', LSolr.new(:field).fuzzy_match('word', distance: 0.0).to_s
+    assert_equal 'field:word~2.0', LSolr.new(:field).fuzzy_match('word', distance: 2.0).to_s
+    assert_equal 'field:word~2.0', LSolr.new(:field).fuzzy_match('word').to_s
     assert_raise(RangeError, 'Out of 0.0..1.0. -0.1 given.') { LSolr.new(:field).fuzzy_match('word', distance: -0.1).to_s }
-    assert_raise(RangeError, 'Out of 0.0..1.0. 1.1 given.') { LSolr.new(:field).fuzzy_match('word', distance: 1.1).to_s }
+    assert_raise(RangeError, 'Out of 0.0..1.0. 2.1 given.') { LSolr.new(:field).fuzzy_match('word', distance: 2.1).to_s }
+    assert_equal 'field:word~2.0', LSolr.new(:field).fuzzy_match('wo|rd').to_s
   end
 
   def test_range_search

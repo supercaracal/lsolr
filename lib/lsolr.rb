@@ -26,7 +26,7 @@ class LSolr
 
   PROXIMITY = '~'
   BOOST = '^'
-  FUZZY_MATCH_DISTANCE_RANGE = (0.0..1.0).freeze
+  FUZZY_MATCH_DISTANCE_RANGE = (0.0..2.0).freeze
 
   PARENTHESIS_LEFT = '('
   PARENTHESIS_RIGHT = ')'
@@ -84,6 +84,8 @@ class LSolr
 
   # Adds parentheses to query expression.
   #
+  # @see https://lucene.apache.org/solr/guide/7_1/the-standard-query-parser.html#grouping-terms-to-form-sub-queries Grouping Terms to Form Sub-Queries
+  #
   # @return [LSolr] copied self instance
   def wrap
     this = dup
@@ -106,11 +108,12 @@ class LSolr
   #
   # @see https://lucene.apache.org/solr/guide/7_1/the-standard-query-parser.html#boosting-a-term-with Boosting a Term with "^"
   #
-  # @param weight [Float] boost weight
+  # @param factor [Float] a boost factor number
   #
   # @return [LSolr] self instance
-  def boost(weight)
-    @boost = "#{BOOST}#{weight}"
+  def boost(factor)
+    raise ArgumentError, "The boost factor number must be positive. #{factor} given." if factor <= 0
+    @boost = "#{BOOST}#{factor}"
     self
   end
 
@@ -147,7 +150,7 @@ class LSolr
   #
   # @return [LSolr] self instance
   def prefix_match(value)
-    @value = clean(value, symbols: RESERVED_SYMBOLS - %w[* ?])
+    @value = clean(value, symbols: RESERVED_SYMBOLS - %w[* ?]).split.join('?')
     self
   end
 
@@ -161,7 +164,7 @@ class LSolr
   #
   # @return [LSolr] self instance
   def phrase_match(values, distance: 0)
-    value = values.map { |v| clean(v) }.join(REPLACEMENT_CHAR)
+    value = values.map { |v| clean(v).split }.flatten.join(REPLACEMENT_CHAR)
     proximity_match = distance > 0 ? "#{PROXIMITY}#{distance}" : ''
     @value = %("#{value}"#{proximity_match})
     self
@@ -175,9 +178,9 @@ class LSolr
   # @param distance [Float] a proximity distance
   #
   # @return [LSolr] self instance
-  def fuzzy_match(value, distance: 0.0)
+  def fuzzy_match(value, distance: 2.0)
     raise RangeError, "Out of #{FUZZY_MATCH_DISTANCE_RANGE}. #{distance} given." unless FUZZY_MATCH_DISTANCE_RANGE.member?(distance)
-    @value = "#{clean(value)}#{PROXIMITY}#{distance}"
+    @value = "#{clean(value).split.join}#{PROXIMITY}#{distance}"
     self
   end
 
