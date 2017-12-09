@@ -3,7 +3,6 @@
 require 'test/unit'
 require 'lsolr'
 
-# ruby -w -I test -I lib test/lsolr_test.rb
 class LSolrTest < Test::Unit::TestCase
   def test_initialize
     assert_raise(ArgumentError, 'Please specify a field name.') { LSolr.new('') }
@@ -40,6 +39,9 @@ class LSolrTest < Test::Unit::TestCase
     assert_equal '(field:word)', LSolr.new(:field).match('word').wrap.to_s
     assert_equal '(field:word)', LSolr.new(:field).wrap.match('word').to_s
     assert_equal '(((field:word)))', LSolr.new(:field).match('word').wrap.wrap.wrap.to_s
+
+    query = LSolr.new(:field).match('word')
+    assert_not_equal query, query.wrap
   end
 
   def test_not

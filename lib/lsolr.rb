@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+# A query builder of Apache Solr standard Lucene type query for Ruby.
+#
 # @example How to use.
 #   monoclinic = LSolr.new(:crystal_system).match(:monoclinic)
 #   cubic = LSolr.new(:crystal_system).match(:cubic)
@@ -35,7 +37,9 @@ class LSolr
 
   attr_accessor :prev, :operator, :left_parentheses, :right_parentheses
 
-  # @param field [String] field name
+  # Create a new query builder instance.
+  #
+  # @param field [String] a field name
   # @return [LSolr] a instance
   def initialize(field)
     raise ArgumentError, 'Please specify a field name.' if field.nil? || field.empty?
@@ -50,7 +54,9 @@ class LSolr
     @right_parentheses = []
   end
 
-  # @return [String] a stringigied query
+  # Returns Apache Solr standard lucene type query string.
+  #
+  # @return [String] a stringified query
   def to_s
     @value = "#{@range_first} #{TO} #{@range_last}" if range_search?
     raise 'Please specify a search condition.' if blank?
@@ -60,18 +66,24 @@ class LSolr
     "#{expr}#{@boost}"
   end
 
-  # @return [true] unless search condition specified
-  # @return [false] if search condition specified
+  alias to_str to_s
+
+  # A query is blank if value is empty in expression.
+  #
+  # @return [true, false]
   def blank?
     @value.empty? && (@range_first.empty? || @range_last.empty?)
   end
 
-  # @return [true] if search condition specified
-  # @return [false] unless search condition specified
+  # A query is present if it's not blank.
+  #
+  # @return [true, false]
   def present?
     !blank?
   end
 
+  # Adds parentheses to query expression.
+  #
   # @return [LSolr] copied self instance
   def wrap
     this = dup
@@ -80,47 +92,73 @@ class LSolr
     this
   end
 
+  # Adds the boolean operator `NOT` to query expression.
+  #
+  # @see https://lucene.apache.org/solr/guide/7_1/the-standard-query-parser.html#the-boolean-operator-not The Boolean Operator NOT ("!")
+  #
   # @return [LSolr] self instance
   def not
     @not = "#{NOT} "
     self
   end
 
+  # Boosts a query expression.
+  #
+  # @see https://lucene.apache.org/solr/guide/7_1/the-standard-query-parser.html#boosting-a-term-with Boosting a Term with "^"
+  #
   # @param weight [Float] boost weight
+  #
   # @return [LSolr] self instance
   def boost(weight)
     @boost = "#{BOOST}#{weight}"
     self
   end
 
-  # @param value [String, Integer, true, false] search word or filter value
+  # Builds a normal query expression.
+  #
+  # @param value [String, Integer, true, false] a search word or a filter value
+  #
   # @return [LSolr] self instance
   def match(value)
     values = clean(value).split
     if values.size > 1
       phrase_match(values)
     else
-      @value = values.join('')
+      @value = values.join
       self
     end
   end
 
-  # @param value [String] filter value
+  # Builds a normal query expression with dates and times.
+  #
+  # @param value [String] a filter value
+  #
   # @return [LSolr] self instance
   def date_time_match(value)
     @value = clean(value, symbols: RESERVED_SYMBOLS - %w[- : . / +])
     self
   end
 
-  # @param value [String] search word
+  # Builds a prefix search query expression.
+  #
+  # @see https://lucene.apache.org/solr/guide/7_1/the-standard-query-parser.html#wildcard-searches Wildcard Searches
+  #
+  # @param value [String] a search word
+  #
   # @return [LSolr] self instance
   def prefix_match(value)
     @value = clean(value, symbols: RESERVED_SYMBOLS - %w[* ?])
     self
   end
 
-  # @param values [Array<String>] search word
+  # Builds a phrase or proximity search query expression.
+  #
+  # @see https://lucene.apache.org/solr/guide/7_1/the-standard-query-parser.html#grouping-clauses-within-a-field Grouping Clauses within a Field
+  # @see https://lucene.apache.org/solr/guide/7_1/the-standard-query-parser.html#proximity-searches Proximity Searches
+  #
+  # @param values [Array<String>] search words
   # @param distance [Integer] proximity distance
+  #
   # @return [LSolr] self instance
   def phrase_match(values, distance: 0)
     value = values.map { |v| clean(v) }.join(REPLACEMENT_CHAR)
@@ -129,8 +167,13 @@ class LSolr
     self
   end
 
-  # @param value [String] search word
-  # @param distance [Float] proximity distance
+  # Builds a fuzzy search query expression.
+  #
+  # @see https://lucene.apache.org/solr/guide/7_1/the-standard-query-parser.html#fuzzy-searches Fuzzy Searches
+  #
+  # @param value [String] a search word
+  # @param distance [Float] a proximity distance
+  #
   # @return [LSolr] self instance
   def fuzzy_match(value, distance: 0.0)
     raise RangeError, "Out of #{FUZZY_MATCH_DISTANCE_RANGE}. #{distance} given." unless FUZZY_MATCH_DISTANCE_RANGE.member?(distance)
@@ -138,42 +181,72 @@ class LSolr
     self
   end
 
-  # @param value [String, Integer] filter value
+  # Builds a range search query expression.
+  #
+  # @see https://lucene.apache.org/solr/guide/7_1/the-standard-query-parser.html#range-searches Range Searches
+  #
+  # @param value [String, Integer] a filter value
+  #
   # @return [LSolr] self instance
   def greater_than(value)
     @range_first = "#{GREATER_THAN}#{value}"
     self
   end
 
-  # @param value [String, Integer] filter value
+  # Builds a range search query expression.
+  #
+  # @see https://lucene.apache.org/solr/guide/7_1/the-standard-query-parser.html#range-searches Range Searches
+  #
+  # @param value [String, Integer] a filter value
+  #
   # @return [LSolr] self instance
   def less_than(value)
     @range_last = "#{value}#{LESS_THAN}"
     self
   end
 
-  # @param value [String, Integer] filter value
+  # Builds a range search query expression.
+  #
+  # @see https://lucene.apache.org/solr/guide/7_1/the-standard-query-parser.html#range-searches Range Searches
+  #
+  # @param value [String, Integer] a filter value
+  #
   # @return [LSolr] self instance
   def greater_than_or_equal_to(value)
     @range_first = "#{GREATER_THAN_OR_EQUAL_TO}#{value}"
     self
   end
 
-  # @param value [String, Integer] filter value
+  # Builds a range search query expression.
+  #
+  # @see https://lucene.apache.org/solr/guide/7_1/the-standard-query-parser.html#range-searches Range Searches
+  #
+  # @param value [String, Integer] a filter value
+  #
   # @return [LSolr] self instance
   def less_than_or_equal_to(value)
     @range_last = "#{value}#{LESS_THAN_OR_EQUAL_TO}"
     self
   end
 
-  # @param another [LSolr] another instance
-  # @return [LSolr] copied another instance
+  # Builds a composite query expression.
+  #
+  # @see https://lucene.apache.org/solr/guide/7_1/the-standard-query-parser.html#the-boolean-operator-and The Boolean Operator AND ("&&")
+  #
+  # @param another [LSolr] another query builder instance
+  #
+  # @return [LSolr] copied another query builder instance
   def and(another)
     link(another, AND)
   end
 
-  # @param another [LSolr] another instance
-  # @return [LSolr] copied another instance
+  # Builds a composite query expression.
+  #
+  # @see https://lucene.apache.org/solr/guide/7_1/the-standard-query-parser.html#boolean-operators-supported-by-the-standard-query-parser Boolean Operators Supported by the Standard Query Parser
+  #
+  # @param another [LSolr] another query builder instance
+  #
+  # @return [LSolr] copied another query builder instance
   def or(another)
     link(another, OR)
   end
@@ -192,7 +265,7 @@ class LSolr
 
   def clean(value, symbols: RESERVED_SYMBOLS)
     value.to_s
-         .tr(symbols.join(''), REPLACEMENT_CHAR)
+         .tr(symbols.join, REPLACEMENT_CHAR)
          .gsub(RESERVED_WORDS) { |match| "\\#{match}" }
   end
 
