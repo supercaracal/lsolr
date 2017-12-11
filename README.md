@@ -2,8 +2,10 @@
 [![Gem Version](https://badge.fury.io/rb/lsolr.svg)](https://badge.fury.io/rb/lsolr)
 
 # LSolr
-A query builder of Apache Solr standard Lucene type query for Ruby.  
-It keep linked list internally. Its implementation is composite pattern.
+LSolr is a query builder of Apache Solr for Ruby.  
+It keep linked list internally. Its implementation is composite pattern.  
+It support only the standard Apache Lucene type query.  
+It isn't Apache Solr client. It has only feature as query builder. Please use it with [RSolr](https://github.com/rsolr/rsolr).
 
 ## Installation
 
