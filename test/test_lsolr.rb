@@ -1,10 +1,10 @@
 # frozen_string_literal: true
 
+require 'minitest/autorun'
 require 'time'
-require 'test/unit'
 require 'lsolr'
 
-class LSolrTest < Test::Unit::TestCase
+class TestLSolr < Minitest::Test
   def test_build
     params = {
       field01: 'hoge',
@@ -31,15 +31,15 @@ class LSolrTest < Test::Unit::TestCase
 
     assert_equal expected, LSolr.build(params).to_s
     assert_equal 'field1:hoge AND field2:true', LSolr.build(field1: 'hoge', field2: true).to_s
-    assert_raise(LSolr::TypeError, 'Could not build solr query. field: f, value: nil') { LSolr.build(f: nil) }
+    assert_raises(LSolr::TypeError, 'Could not build solr query. field: f, value: nil') { LSolr.build(f: nil) }
   end
 
   def test_initialize
-    assert_raise(LSolr::ArgumentError, 'Please specify a field name.') { LSolr.new('') }
+    assert_raises(LSolr::ArgumentError, 'Please specify a field name.') { LSolr.new('') }
   end
 
   def test_to_s
-    assert_raise(LSolr::IncompleteQueryError, 'Please specify a search value.') { LSolr.new(:field).to_s }
+    assert_raises(LSolr::IncompleteQueryError, 'Please specify a search value.') { LSolr.new(:field).to_s }
 
     bool1 = LSolr.new(:bool_field).match(true)
     bool2 = LSolr.new(:bool_field).match(false)
@@ -72,7 +72,7 @@ class LSolrTest < Test::Unit::TestCase
     assert_equal '(((field:word)))', LSolr.new(:field).match('word').wrap.wrap.wrap.to_s
 
     query = LSolr.new(:field).match('word')
-    assert_not_equal query, query.wrap
+    assert !query.equal?(query.wrap)
   end
 
   def test_not
@@ -84,8 +84,8 @@ class LSolrTest < Test::Unit::TestCase
     assert_equal 'field:word^1.5', LSolr.new(:field).match('word').boost(1.5).to_s
     assert_equal 'field:word^1.5', LSolr.new(:field).boost(1.5).match('word').to_s
     assert_equal 'field:word^0.1', LSolr.new(:field).boost(0.1).match('word').to_s
-    assert_raise(LSolr::ArgumentError, 'The boost factor numver must be positive. 0.0 given.') { LSolr.new(:field).match('word').boost(0.0) }
-    assert_raise(LSolr::ArgumentError, 'The boost factor numver must be positive. -0.1 given.') { LSolr.new(:field).match('word').boost(-0.1) }
+    assert_raises(LSolr::ArgumentError, 'The boost factor numver must be positive. 0.0 given.') { LSolr.new(:field).match('word').boost(0.0) }
+    assert_raises(LSolr::ArgumentError, 'The boost factor numver must be positive. -0.1 given.') { LSolr.new(:field).match('word').boost(-0.1) }
   end
 
   def test_match
@@ -118,8 +118,8 @@ class LSolrTest < Test::Unit::TestCase
     assert_equal 'field:word~0.0', LSolr.new(:field).fuzzy_match('word', distance: 0.0).to_s
     assert_equal 'field:word~2.0', LSolr.new(:field).fuzzy_match('word', distance: 2.0).to_s
     assert_equal 'field:word~2.0', LSolr.new(:field).fuzzy_match('word').to_s
-    assert_raise(LSolr::RangeError, 'Out of 0.0..1.0. -0.1 given.') { LSolr.new(:field).fuzzy_match('word', distance: -0.1).to_s }
-    assert_raise(LSolr::RangeError, 'Out of 0.0..1.0. 2.1 given.') { LSolr.new(:field).fuzzy_match('word', distance: 2.1).to_s }
+    assert_raises(LSolr::RangeError, 'Out of 0.0..1.0. -0.1 given.') { LSolr.new(:field).fuzzy_match('word', distance: -0.1).to_s }
+    assert_raises(LSolr::RangeError, 'Out of 0.0..1.0. 2.1 given.') { LSolr.new(:field).fuzzy_match('word', distance: 2.1).to_s }
     assert_equal 'field:word~2.0', LSolr.new(:field).fuzzy_match('wo|rd').to_s
   end
 
@@ -129,7 +129,7 @@ class LSolrTest < Test::Unit::TestCase
     assert_equal 'field:[10 TO 20}', LSolr.new(:field).greater_than_or_equal_to(10).less_than(20).to_s
     assert_equal 'field:[10 TO 20]', LSolr.new(:field).greater_than_or_equal_to(10).less_than_or_equal_to(20).to_s
 
-    assert_raise(LSolr::IncompleteQueryError, 'Please specify a search condition.') { LSolr.new(:field).greater_than(10).to_s }
+    assert_raises(LSolr::IncompleteQueryError, 'Please specify a search condition.') { LSolr.new(:field).greater_than(10).to_s }
 
     from = Date.new(2000, 1, 1)
     to = Date.new(3000, 12, 31)
@@ -151,9 +151,9 @@ class LSolrTest < Test::Unit::TestCase
     query2 = LSolr.new(:field2).match('word2')
     composite = query1.and(query2)
 
-    assert_equal true, composite.is_a?(LSolr)
-    assert_not_equal composite, query1
-    assert_not_equal composite, query2
+    assert_instance_of LSolr, composite
+    assert !query1.equal?(composite)
+    assert !query2.equal?(composite)
     assert_equal 'field1:word1 AND field2:word2', composite.to_s
   end
 
@@ -162,9 +162,9 @@ class LSolrTest < Test::Unit::TestCase
     query2 = LSolr.new(:field2).match('word2')
     composite = query1.or(query2)
 
-    assert_equal true, composite.is_a?(LSolr)
-    assert_not_equal composite, query1
-    assert_not_equal composite, query2
+    assert_instance_of LSolr, composite
+    assert !query1.equal?(composite)
+    assert !query2.equal?(composite)
     assert_equal 'field1:word1 OR field2:word2', composite.to_s
   end
 end

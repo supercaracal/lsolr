@@ -7,10 +7,10 @@ GEM
   remote: https://rubygems.org/
   specs:
     ast (2.3.0)
+    minitest (5.10.3)
     parallel (1.12.0)
     parser (2.4.0.2)
       ast (~> 2.3)
-    power_assert (1.1.1)
     powerpack (0.1.1)
     rainbow (2.2.2)
       rake
@@ -23,8 +23,6 @@ GEM
       ruby-progressbar (~> 1.7)
       unicode-display_width (~> 1.0, >= 1.0.1)
     ruby-progressbar (1.9.0)
-    test-unit (3.2.6)
-      power_assert
     unicode-display_width (1.3.0)
 
 PLATFORMS
@@ -32,9 +30,9 @@ PLATFORMS
 
 DEPENDENCIES
   lsolr!
+  minitest
   rake
   rubocop
-  test-unit
 
 BUNDLED WITH
    1.16.0
