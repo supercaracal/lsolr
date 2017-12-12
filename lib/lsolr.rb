@@ -176,7 +176,7 @@ class LSolr
   # @return [LSolr] copied self instance
   def wrap
     this = dup
-    take_head(this).left_parentheses << PARENTHESIS_LEFT
+    this.head.left_parentheses << PARENTHESIS_LEFT
     this.right_parentheses << PARENTHESIS_RIGHT
     this
   end
@@ -354,6 +354,17 @@ class LSolr
     link(another, OR)
   end
 
+  # Returns a first term of query.
+  #
+  # @return [LSolr] a first term of query.
+  def head
+    if !prev.nil? && prev.present?
+      prev.head
+    else
+      self
+    end
+  end
+
   private
 
   def initialize_copy(obj)
@@ -376,15 +387,10 @@ class LSolr
     return self if another.nil? || another.blank?
 
     another = another.dup
-    head = take_head(another)
+    head = another.head
     head.prev = dup
     head.operator = operator
     another
-  end
-
-  def take_head(element)
-    while !element.prev.nil? && element.prev.present? do element = element.prev end
-    element
   end
 
   def format_date(date)
