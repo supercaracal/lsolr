@@ -78,6 +78,11 @@ class TestLSolr < Minitest::Test
   def test_not
     assert_equal 'NOT field:word', LSolr.new(:field).not.match('word').to_s
     assert_equal 'NOT field:word', LSolr.new(:field).match('word').not.to_s
+    assert_equal 'NOT (field:1 OR field:2 OR field:3)', LSolr.build(field: [1, 2, 3]).not.to_s
+
+    cond1 = LSolr.new(:field1).match('word1')
+    cond2 = LSolr.new(:field2).not.match('word2')
+    assert_equal 'NOT (field1:word1 AND NOT field2:word2)', cond1.and(cond2).wrap.not.to_s
   end
 
   def test_boost

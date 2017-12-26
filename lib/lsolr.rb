@@ -79,7 +79,7 @@ class LSolr
   RESERVED_WORDS = /(AND|OR|NOT)/
   REPLACEMENT_CHAR = ' '
 
-  attr_accessor :prev, :operator, :left_parentheses, :right_parentheses
+  attr_accessor :prev, :operator, :left_parentheses, :right_parentheses, :expr_not
 
   class << self
     # Builds composite query and returns builder instance.
@@ -131,7 +131,7 @@ class LSolr
   def initialize(field)
     raise ArgumentError, 'Please specify a field name.' if field.nil? || field.empty?
 
-    @not = ''
+    @expr_not = ''
     @field = field
     @value = ''
     @range_first = ''
@@ -144,11 +144,11 @@ class LSolr
   # Returns Apache Solr standard lucene type query string.
   #
   # @return [String] a stringified query
-  def to_s
+  def to_s # rubocop:disable Metrics/AbcSize
     @value = "#{@range_first} #{TO} #{@range_last}" if range_search?
     raise IncompleteQueryError, 'Please specify a search value.' if blank?
 
-    expr = "#{left_parentheses.join}#{@not}#{@field}:#{@value}#{right_parentheses.join}"
+    expr = "#{expr_not}#{left_parentheses.join}#{@field}:#{@value}#{right_parentheses.join}"
     expr = "#{prev} #{operator} #{expr}" if !prev.nil? && prev.present?
     "#{expr}#{@boost}"
   end
@@ -187,8 +187,9 @@ class LSolr
   #
   # @return [LSolr] self instance
   def not
-    @not = "#{NOT} "
-    self
+    this = dup
+    this.head.expr_not = "#{NOT} "
+    this
   end
 
   # Boosts a query expression.
