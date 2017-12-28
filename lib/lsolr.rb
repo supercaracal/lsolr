@@ -229,12 +229,7 @@ class LSolr
   #
   # @return [LSolr] self instance
   def date_time_match(value)
-    value = if value.is_a?(Date) || value.is_a?(Time)
-              format_date(value)
-            else
-              clean(value, symbols: RESERVED_SYMBOLS - %w[- : . / +])
-            end
-
+    value = stringify(value, symbols: RESERVED_SYMBOLS - %w[- : . / +])
     @value = %("#{value}")
     self
   end
@@ -289,8 +284,7 @@ class LSolr
   #
   # @return [LSolr] self instance
   def greater_than(value)
-    value = format_date(value) if value.is_a?(Date) || value.is_a?(Time)
-    @range_first = "#{GREATER_THAN}#{value}"
+    @range_first = "#{GREATER_THAN}#{stringify(value)}"
     self
   end
 
@@ -302,8 +296,7 @@ class LSolr
   #
   # @return [LSolr] self instance
   def less_than(value)
-    value = format_date(value) if value.is_a?(Date) || value.is_a?(Time)
-    @range_last = "#{value}#{LESS_THAN}"
+    @range_last = "#{stringify(value)}#{LESS_THAN}"
     self
   end
 
@@ -315,8 +308,7 @@ class LSolr
   #
   # @return [LSolr] self instance
   def greater_than_or_equal_to(value)
-    value = format_date(value) if value.is_a?(Date) || value.is_a?(Time)
-    @range_first = "#{GREATER_THAN_OR_EQUAL_TO}#{value}"
+    @range_first = "#{GREATER_THAN_OR_EQUAL_TO}#{stringify(value)}"
     self
   end
 
@@ -328,8 +320,7 @@ class LSolr
   #
   # @return [LSolr] self instance
   def less_than_or_equal_to(value)
-    value = format_date(value) if value.is_a?(Date) || value.is_a?(Time)
-    @range_last = "#{value}#{LESS_THAN_OR_EQUAL_TO}"
+    @range_last = "#{stringify(value)}#{LESS_THAN_OR_EQUAL_TO}"
     self
   end
 
@@ -384,14 +375,12 @@ class LSolr
          .gsub(RESERVED_WORDS) { |match| "\\#{match}" }
   end
 
-  def link(another, operator)
-    return self if another.nil? || another.blank?
-
-    another = another.dup
-    head = another.head
-    head.prev = dup
-    head.operator = operator
-    another
+  def stringify(value, symbols: RESERVED_SYMBOLS - %w[- : . / + *])
+    if value.is_a?(Date) || value.is_a?(Time)
+      format_date(value)
+    else
+      clean(value, symbols: symbols)
+    end
   end
 
   def format_date(date)
@@ -404,5 +393,15 @@ class LSolr
     return date.strftime(FORMAT_DATE_TIME) if msec_str == '000'
 
     "#{date.strftime('%Y-%m-%dT%H:%M:%S')}.#{msec_str}Z"
+  end
+
+  def link(another, operator)
+    return self if another.nil? || another.blank?
+
+    another = another.dup
+    head = another.head
+    head.prev = dup
+    head.operator = operator
+    another
   end
 end

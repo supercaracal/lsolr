@@ -106,6 +106,7 @@ class TestLSolr < Minitest::Test
     assert_equal 'field:"2000-01-01T12:00:00Z"', LSolr.new(:field).date_time_match(Time.new(2000, 1, 1, 12, 0, 0)).to_s
     assert_equal 'field:"2000-01-01T00:00:00Z"', LSolr.new(:field).date_time_match(Date.new(2000, 1, 1)).to_s
     assert_equal 'field:"2000-04-05T06:07:08.256Z"', LSolr.new(:field).date_time_match(Time.parse('2000-04-05 06:07:08.256')).to_s
+    assert_equal 'field:"NOW+9HOURS-7DAYS"', LSolr.new(:field).date_time_match('NOW+9HOURS-7DAYS').to_s
   end
 
   def test_prefix_match
@@ -133,6 +134,10 @@ class TestLSolr < Minitest::Test
     assert_equal 'field:{10 TO 20]', LSolr.new(:field).greater_than(10).less_than_or_equal_to(20).to_s
     assert_equal 'field:[10 TO 20}', LSolr.new(:field).greater_than_or_equal_to(10).less_than(20).to_s
     assert_equal 'field:[10 TO 20]', LSolr.new(:field).greater_than_or_equal_to(10).less_than_or_equal_to(20).to_s
+    assert_equal 'field:[* TO *]', LSolr.new(:field).greater_than_or_equal_to('*').less_than_or_equal_to('*').to_s
+    assert_equal 'field:{* TO *}', LSolr.new(:field).greater_than('*').less_than('*').to_s
+    assert_equal 'field:[-10.5 TO 20.7]', LSolr.new(:field).greater_than_or_equal_to(-10.5).less_than_or_equal_to(20.7).to_s
+    assert_equal 'field:[NOW+9HOURS-7DAYS TO *]', LSolr.new(:field).greater_than_or_equal_to('NOW+9HOURS-7DAYS').less_than_or_equal_to('*').to_s
 
     assert_raises(LSolr::IncompleteQueryError, 'Please specify a search condition.') { LSolr.new(:field).greater_than(10).to_s }
 
