@@ -69,8 +69,8 @@ left.or(right).to_s
 ```ruby
 require 'lsolr'
 
-['a', 'b', 'c'].map { |v| LSolr.build(field: v) }.reduce { |a, e| a.and(e) }.wrap.not.to_s
-#=> 'NOT (field:a AND field:b AND field:c)'
+['a', 'b', 'c'].map { |v| LSolr.build(field: v) }.reduce { |a, e| a.or(e) }.wrap.not.to_s
+#=> 'NOT (field:a OR field:b OR field:c)'
 ```
 
 ## See also
