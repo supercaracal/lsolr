@@ -66,6 +66,13 @@ left.or(right).to_s
 #    OR (bool_field:false AND (date_field1:[* TO 2000-06-30T23:59:59Z] OR date_field2:{2000-07-01T00:00:00Z TO 2001-01-01T00:00:00Z}))'
 ```
 
+```ruby
+require 'lsolr'
+
+['a', 'b', 'c'].map { |v| LSolr.build(field: v) }.reduce { |a, e| a.and(e) }.wrap.not.to_s
+#=> 'NOT (field:a AND field:b AND field:c)'
+```
+
 ## See also
 * [The Standard Query Parser](https://lucene.apache.org/solr/guide/7_1/the-standard-query-parser.html)
 * [RSolr](https://github.com/rsolr/rsolr)
