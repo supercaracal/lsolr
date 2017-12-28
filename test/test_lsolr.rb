@@ -177,4 +177,18 @@ class TestLSolr < Minitest::Test
     assert !query2.equal?(composite)
     assert_equal 'field1:word1 OR field2:word2', composite.to_s
   end
+
+  def test_composite
+    q = LSolr.build(f: 1)
+    q1 = q.wrap.and(q)
+    q2 = q.and(q.wrap)
+    q3 = q1.wrap.or(q2.wrap)
+    q4 = q3.wrap.not
+
+    assert_equal 'f:1', q.to_s
+    assert_equal '(f:1) AND f:1', q1.to_s
+    assert_equal 'f:1 AND (f:1)', q2.to_s
+    assert_equal '((f:1) AND f:1) OR (f:1 AND (f:1))', q3.to_s
+    assert_equal 'NOT (((f:1) AND f:1) OR (f:1 AND (f:1)))', q4.to_s
+  end
 end
