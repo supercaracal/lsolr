@@ -5,7 +5,7 @@
 LSolr is a query builder of Apache Solr for Ruby. It keep one direction linked list internally.
 
 ```
-term = field:value
+term = field:value = a LSolr instance
 
      AND      AND      AND     AND
      OR       OR       OR      OR
