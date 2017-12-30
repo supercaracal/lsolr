@@ -2,7 +2,7 @@
 [![Gem Version](https://badge.fury.io/rb/lsolr.svg)](https://badge.fury.io/rb/lsolr)
 
 # LSolr
-LSolr is a query builder of Apache Solr for Ruby. It keep one direction linked list internally.
+LSolr is a query builder of Apache Solr for Ruby. It keeps one direction linked list internally.
 
 ```
 term = field:value = a LSolr instance
