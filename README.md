@@ -97,6 +97,3 @@ require 'lsolr'
 * [RSolr](https://github.com/rsolr/rsolr)
 * [Ruby Doc](http://www.rubydoc.info/github/supercaracal/lsolr/LSolr)
 * [Gem Guide](http://guides.rubygems.org/make-your-own-gem/)
-
-## License
-The gem is available as open source under the terms of the [MIT License](http://opensource.org/licenses/MIT).
