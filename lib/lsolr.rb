@@ -106,6 +106,8 @@ class LSolr
     end
 
     def build_array_query(field, values)
+      return LSolr.new(:dummy) if values.empty?
+
       values.map { |v| build_query(field, v) }.reduce { |a, e| a.or(e) }.wrap
     end
 

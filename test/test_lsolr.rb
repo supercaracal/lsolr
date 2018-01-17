@@ -32,6 +32,8 @@ class TestLSolr < Minitest::Test
     assert_equal expected, LSolr.build(params).to_s
     assert_equal 'field1:hoge AND field2:true', LSolr.build(field1: 'hoge', field2: true).to_s
     assert_raises(LSolr::TypeError, 'Could not build solr query. field: f, value: nil') { LSolr.build(f: nil) }
+    assert_raises(LSolr::TypeError, 'Could not build solr query. field: f, value: nil') { LSolr.build(f: {}) }
+    assert_raises(LSolr::IncompleteQueryError, 'Please specify a search value.') { LSolr.build(field: []).to_s }
   end
 
   def test_initialize
@@ -190,5 +192,14 @@ class TestLSolr < Minitest::Test
     assert_equal 'f:1 AND (f:1)', q2.to_s
     assert_equal '((f:1) AND f:1) OR (f:1 AND (f:1))', q3.to_s
     assert_equal 'NOT (((f:1) AND f:1) OR (f:1 AND (f:1)))', q4.to_s
+
+    incomplete_term = LSolr.new(:dummy)
+    q = LSolr.build(f: 1)
+
+    assert_equal 'f:1', incomplete_term.and(q).to_s
+    assert_equal 'f:1', q.and(incomplete_term).to_s
+
+    assert_equal 'f:1', incomplete_term.or(q).to_s
+    assert_equal 'f:1', q.or(incomplete_term).to_s
   end
 end
