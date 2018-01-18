@@ -76,6 +76,14 @@ class TestLSolr < Minitest::Test
 
     query = LSolr.new(:field).match('word')
     assert !query.equal?(query.wrap)
+
+    incomplete_term = LSolr.new(:dummy)
+    term = LSolr.new(:field).match('word')
+    assert_instance_of LSolr, incomplete_term.wrap
+    assert_equal '(field:word)', incomplete_term.and(term).wrap.to_s
+    assert_equal '(field:word)', term.and(incomplete_term).wrap.to_s
+    assert_instance_of LSolr, incomplete_term.and(incomplete_term).wrap
+    assert_raises(LSolr::IncompleteQueryError, 'Please specify a search value.') { incomplete_term.and(incomplete_term).wrap.to_s }
   end
 
   def test_not
