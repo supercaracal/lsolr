@@ -33,12 +33,8 @@ class TestLSolr < Minitest::Test
     assert_equal 'field1:hoge AND field2:true', LSolr.build(field1: 'hoge', field2: true).to_s
     assert_raises(LSolr::TypeError, 'Could not build solr query. field: f, value: nil') { LSolr.build(f: nil) }
     assert_raises(LSolr::TypeError, 'Could not build solr query. field: f, value: {}') { LSolr.build(f: {}) }
+    assert_instance_of LSolr, LSolr.build(field: [])
     assert_raises(LSolr::IncompleteQueryError, 'Please specify a search value.') { LSolr.build(field: []).to_s }
-  end
-
-  def test_empty
-    assert_instance_of LSolr, LSolr.empty
-    assert_raises(LSolr::IncompleteQueryError, 'Please specify a search value.') { LSolr.empty.to_s }
   end
 
   def test_initialize

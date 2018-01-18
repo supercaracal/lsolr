@@ -91,13 +91,6 @@ class LSolr
       params.map { |f, v| build_query(f, v) }.reduce { |a, e| a.and(e) }
     end
 
-    # Returns a empty term.
-    #
-    # @return [LSolr] a instance
-    def empty
-      new(:dummy)
-    end
-
     private
 
     def build_query(field, value) # rubocop:disable Metrics/CyclomaticComplexity
@@ -113,7 +106,7 @@ class LSolr
     end
 
     def build_array_query(field, values)
-      return LSolr.empty if values.empty?
+      return LSolr.new(field) if values.empty?
 
       values.map { |v| build_query(field, v) }.reduce { |a, e| a.or(e) }.wrap
     end
