@@ -36,6 +36,11 @@ class TestLSolr < Minitest::Test
     assert_raises(LSolr::IncompleteQueryError, 'Please specify a search value.') { LSolr.build(field: []).to_s }
   end
 
+  def test_empty
+    assert_instance_of LSolr, LSolr.empty
+    assert_raises(LSolr::IncompleteQueryError, 'Please specify a search value.') { LSolr.empty.to_s }
+  end
+
   def test_initialize
     assert_raises(LSolr::ArgumentError, 'Please specify a field name.') { LSolr.new('') }
   end
