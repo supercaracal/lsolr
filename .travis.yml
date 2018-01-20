@@ -3,6 +3,9 @@ language: "ruby"
 sudo: false
 notifications:
   email: false
+addons:
+  code_climate:
+    repo_token: "64a31e3bfe92dbf417722f9967c5a2ab1e27daf11bb597066bbfa4db9815a002"
 rvm:
   - "2.2.2"
   - "2.3.6"
