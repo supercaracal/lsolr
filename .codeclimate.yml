@@ -1,12 +1,11 @@
 engines:
   rubocop:
     enabled: true
-  brakeman:
-    enabled: true
+    channel: rubocop-0-52
+    config:
+      file: .rubocop.yml
   bundler-audit:
     enabled: true
-  csslint:
-    enabled: false
 ratings:
   paths:
     - lib/lsolr.rb

@@ -1,5 +1,8 @@
 [![Build Status](https://travis-ci.org/supercaracal/lsolr.svg?branch=master)](https://travis-ci.org/supercaracal/lsolr)
 [![Gem Version](https://badge.fury.io/rb/lsolr.svg)](https://badge.fury.io/rb/lsolr)
+[![Maintainability](https://api.codeclimate.com/v1/badges/5350f530cb680886b748/maintainability)](https://codeclimate.com/github/supercaracal/lsolr/maintainability)
+[![Test Coverage](https://api.codeclimate.com/v1/badges/5350f530cb680886b748/test_coverage)](https://codeclimate.com/github/supercaracal/lsolr/test_coverage)
+[![Issue Count](https://codeclimate.com/github/supercaracal/lsolr/badges/issue_count.svg)](https://codeclimate.com/github/supercaracal/lsolr/issues)
 
 # LSolr
 LSolr is a query builder of Apache Solr for Ruby. It keeps one direction linked list internally.
