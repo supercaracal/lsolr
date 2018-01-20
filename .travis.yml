@@ -18,3 +18,5 @@ script:
   - "bundle install --path=.bundle"
   - "bundle exec rake test"
   - "bundle exec rubocop"
+after_success:
+  - "bundle exec codeclimate-test-reporter"
