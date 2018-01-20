@@ -1,0 +1,15 @@
+engines:
+  rubocop:
+    enabled: true
+  brakeman:
+    enabled: true
+  bundler-audit:
+    enabled: true
+  csslint:
+    enabled: false
+ratings:
+  paths:
+    - lib/lsolr.rb
+exclude_paths:
+  - test/test_lsolr.rb
+  - .bundle/**/*
