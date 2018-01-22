@@ -1,14 +1,14 @@
 # frozen_string_literal: true
 
-require 'minitest/autorun'
-require 'time'
-require 'lsolr'
 require 'simplecov'
-
 SimpleCov.start do
   add_filter '/.bundle/'
   add_filter '/test/'
 end
+
+require 'minitest/autorun'
+require 'time'
+require 'lsolr'
 
 class TestLSolr < Minitest::Test
   def test_build
