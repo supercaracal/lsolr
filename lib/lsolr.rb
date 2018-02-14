@@ -152,10 +152,8 @@ class LSolr
   def to_s # rubocop:disable Metrics/AbcSize
     raise IncompleteQueryError, 'Please specify search field and value.' if blank?
 
-    return @raw unless @raw.empty?
-
-    @value = "#{@range_first} #{TO} #{@range_last}" if range_search?
-    expr = "#{expr_not}#{left_parentheses.join}#{@field}:#{@value}#{right_parentheses.join}"
+    expr = build_term_expr
+    expr = "#{expr_not}#{left_parentheses.join}#{expr}#{right_parentheses.join}"
     expr = "#{prev} #{operator} #{expr}" if !prev.nil? && prev.present?
     "#{expr}#{@boost}"
   end
@@ -397,6 +395,10 @@ class LSolr
     @value.empty? && !@range_first.empty? && !@range_last.empty?
   end
 
+  def raw?
+    !@raw.empty?
+  end
+
   def clean(value, symbols: RESERVED_SYMBOLS)
     value.to_s
          .tr(symbols.join, REPLACEMENT_CHAR)
@@ -431,5 +433,15 @@ class LSolr
     head.prev = dup
     head.operator = operator
     another
+  end
+
+  def build_term_expr
+    if raw?
+      @raw
+    elsif range_search?
+      "#{@field}:#{@range_first} #{TO} #{@range_last}"
+    else
+      "#{@field}:#{@value}"
+    end
   end
 end

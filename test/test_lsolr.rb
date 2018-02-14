@@ -135,6 +135,9 @@ class TestLSolr < Minitest::Test
     assert_equal '(field:word)', term.and(incomplete_term).wrap.to_s
     assert_instance_of LSolr, incomplete_term.and(incomplete_term).wrap
     assert_raises(LSolr::IncompleteQueryError) { incomplete_term.and(incomplete_term).wrap.to_s }
+
+    assert_equal '(f:1 AND g:2)', LSolr.new.raw('f:1').and(LSolr.new(:g).match(2)).wrap.to_s
+    assert_equal '(f:1 AND g:2)', LSolr.new(:f).match(1).and(LSolr.new.raw('g:2')).wrap.to_s
   end
 
   def test_not
@@ -145,6 +148,9 @@ class TestLSolr < Minitest::Test
     cond1 = LSolr.new(:field1).match('word1')
     cond2 = LSolr.new(:field2).not.match('word2')
     assert_equal 'NOT (field1:word1 AND NOT field2:word2)', cond1.and(cond2).wrap.not.to_s
+
+    assert_equal 'NOT f:1 AND g:2', LSolr.new.raw('f:1').and(LSolr.new(:g).match(2)).not.to_s
+    assert_equal 'NOT f:1 AND g:2', LSolr.new(:f).match(1).and(LSolr.new.raw('g:2')).not.to_s
   end
 
   def test_boost
