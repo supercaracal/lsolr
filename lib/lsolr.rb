@@ -84,11 +84,15 @@ class LSolr
   class << self
     # Builds composite query and returns builder instance.
     #
-    # @param params [Hash{Symbol => String, Integer, Float, true, false, Range, Date, Time}] query terms
+    # @param params [Hash{Symbol => String, Integer, Float, true, false, Range, Date, Time}, String] query terms or a raw query
     #
     # @return [LSolr] a instance
     def build(params)
-      params.map { |f, v| build_query(f, v) }.reduce { |a, e| a.and(e) }
+      case params
+      when Hash then params.map { |f, v| build_query(f, v) }.reduce { |a, e| a.and(e) }
+      when String then new.raw(params)
+      else raise TypeError, 'Could not build solr query. Please specify a Hash or String value.'
+      end
     end
 
     private
@@ -106,7 +110,7 @@ class LSolr
     end
 
     def build_array_query(field, values)
-      return LSolr.new(field) if values.empty?
+      return new(field) if values.empty?
 
       values.map { |v| build_query(field, v) }.reduce { |a, e| a.or(e) }.wrap
     end
@@ -128,28 +132,29 @@ class LSolr
 
   # Create a new query builder instance.
   #
-  # @param field [String] a field name
+  # @param field [String, Symbol] a field name
   # @return [LSolr] a instance
-  def initialize(field)
-    raise ArgumentError, 'Please specify a field name.' if field.nil? || field.empty?
-
+  def initialize(field = '')
     @expr_not = ''
-    @field = field
+    @field = field.to_s
     @value = ''
     @range_first = ''
     @range_last = ''
     @boost = ''
     @left_parentheses = []
     @right_parentheses = []
+    @raw = ''
   end
 
   # Returns Apache Solr standard lucene type query string.
   #
   # @return [String] a stringified query
   def to_s # rubocop:disable Metrics/AbcSize
-    @value = "#{@range_first} #{TO} #{@range_last}" if range_search?
-    raise IncompleteQueryError, 'Please specify a search value.' if blank?
+    raise IncompleteQueryError, 'Please specify search field and value.' if blank?
 
+    return @raw unless @raw.empty?
+
+    @value = "#{@range_first} #{TO} #{@range_last}" if range_search?
     expr = "#{expr_not}#{left_parentheses.join}#{@field}:#{@value}#{right_parentheses.join}"
     expr = "#{prev} #{operator} #{expr}" if !prev.nil? && prev.present?
     "#{expr}#{@boost}"
@@ -157,11 +162,12 @@ class LSolr
 
   alias to_str to_s
 
-  # A query is blank if value is empty in expression.
+  # A query is blank if term is incomplete in expression.
   #
   # @return [true, false]
   def blank?
-    @value.empty? && (@range_first.empty? || @range_last.empty?)
+    managed_query_absence = @field.empty? || (@value.empty? && (@range_first.empty? || @range_last.empty?))
+    managed_query_absence && @raw.empty?
   end
 
   # A query is present if it's not blank.
@@ -169,6 +175,26 @@ class LSolr
   # @return [true, false]
   def present?
     !blank?
+  end
+
+  # Sets a field name.
+  #
+  # @param f [String, Symbol] a field name
+  #
+  # @return [LSolr] self instance
+  def field(f)
+    @field = f.to_s
+    self
+  end
+
+  # Sets a raw query.
+  #
+  # @param q [String] raw query
+  #
+  # @return [LSolr] self instance
+  def raw(q)
+    @raw = q.to_s
+    self
   end
 
   # Adds parentheses to query expression.

@@ -37,18 +37,29 @@ class TestLSolr < Minitest::Test
 
     assert_equal expected, LSolr.build(params).to_s
     assert_equal 'field1:hoge AND field2:true', LSolr.build(field1: 'hoge', field2: true).to_s
-    assert_raises(LSolr::TypeError, 'Could not build solr query. field: f, value: nil') { LSolr.build(f: nil) }
-    assert_raises(LSolr::TypeError, 'Could not build solr query. field: f, value: {}') { LSolr.build(f: {}) }
+    assert_equal 'field1:hoge AND field2:true', LSolr.build('field1:hoge AND field2:true').to_s
+    assert_equal 'hogehoge', LSolr.build('hogehoge').to_s
+    assert_raises(LSolr::TypeError) { LSolr.build(f: nil) }
+    assert_raises(LSolr::TypeError) { LSolr.build(f: {}) }
+    assert_raises(LSolr::TypeError) { LSolr.build([]) }
+    assert_raises(LSolr::TypeError) { LSolr.build(nil) }
     assert_instance_of LSolr, LSolr.build(field: [])
-    assert_raises(LSolr::IncompleteQueryError, 'Please specify a search value.') { LSolr.build(field: []).to_s }
+    assert_raises(LSolr::IncompleteQueryError) { LSolr.build(field: []).to_s }
   end
 
   def test_initialize
-    assert_raises(LSolr::ArgumentError, 'Please specify a field name.') { LSolr.new('') }
+    assert_instance_of LSolr, LSolr.new
+    assert_instance_of LSolr, LSolr.new(:field)
+    assert_instance_of LSolr, LSolr.new('field')
   end
 
   def test_to_s
-    assert_raises(LSolr::IncompleteQueryError, 'Please specify a search value.') { LSolr.new(:field).to_s }
+    assert_raises(LSolr::IncompleteQueryError) { LSolr.new.to_s }
+    assert_raises(LSolr::IncompleteQueryError) { LSolr.new(nil).to_s }
+    assert_raises(LSolr::IncompleteQueryError) { LSolr.new(:field).to_s }
+    assert_raises(LSolr::IncompleteQueryError) { LSolr.new(:field).match('').to_s }
+    assert_raises(LSolr::IncompleteQueryError) { LSolr.new(:field).greater_than_or_equal_to(0).to_s }
+    assert_raises(LSolr::IncompleteQueryError) { LSolr.new(:field).less_than_or_equal_to(0).to_s }
 
     bool1 = LSolr.new(:bool_field).match(true)
     bool2 = LSolr.new(:bool_field).match(false)
@@ -64,15 +75,49 @@ class TestLSolr < Minitest::Test
   end
 
   def test_blank?
+    assert_equal true, LSolr.new.blank?
+    assert_equal true, LSolr.new(nil).blank?
+    assert_equal true, LSolr.new('').blank?
+    assert_equal true, LSolr.new(:'').blank?
     assert_equal true, LSolr.new(:field).blank?
     assert_equal false, LSolr.new(:field).match('word').blank?
     assert_equal true, LSolr.new(:field).match('').blank?
+    assert_equal false, LSolr.new(:field).greater_than(0).less_than_or_equal_to(1).blank?
+    assert_equal true, LSolr.new(:field).greater_than_or_equal_to(0).blank?
+    assert_equal true, LSolr.new(:field).greater_than(0).blank?
+    assert_equal true, LSolr.new(:field).less_than_or_equal_to(0).blank?
+    assert_equal true, LSolr.new(:field).less_than(0).blank?
+    assert_equal false, LSolr.new.raw('field:value').blank?
+    assert_equal true, LSolr.new.raw('').blank?
   end
 
   def test_present?
+    assert_equal false, LSolr.new.present?
+    assert_equal false, LSolr.new(nil).present?
+    assert_equal false, LSolr.new('').present?
+    assert_equal false, LSolr.new(:'').present?
     assert_equal false, LSolr.new(:field).present?
     assert_equal true, LSolr.new(:field).match('word').present?
     assert_equal false, LSolr.new(:field).match('').present?
+    assert_equal true, LSolr.new(:field).greater_than_or_equal_to(0).less_than(1).present?
+    assert_equal false, LSolr.new(:field).greater_than_or_equal_to(0).present?
+    assert_equal false, LSolr.new(:field).greater_than(0).present?
+    assert_equal false, LSolr.new(:field).less_than_or_equal_to(0).present?
+    assert_equal false, LSolr.new(:field).less_than(0).present?
+    assert_equal true, LSolr.new.raw('field:value').present?
+    assert_equal false, LSolr.new.raw('').present?
+  end
+
+  def test_field
+    assert_instance_of LSolr, LSolr.new.field('field')
+    assert_instance_of LSolr, LSolr.new.field(nil)
+    assert_raises(ArgumentError) { LSolr.new.field }
+  end
+
+  def test_raw
+    assert_instance_of LSolr, LSolr.new.raw('field:value')
+    assert_instance_of LSolr, LSolr.new.raw(nil)
+    assert_raises(ArgumentError) { LSolr.new.raw }
   end
 
   def test_wrap
@@ -89,7 +134,7 @@ class TestLSolr < Minitest::Test
     assert_equal '(field:word)', incomplete_term.and(term).wrap.to_s
     assert_equal '(field:word)', term.and(incomplete_term).wrap.to_s
     assert_instance_of LSolr, incomplete_term.and(incomplete_term).wrap
-    assert_raises(LSolr::IncompleteQueryError, 'Please specify a search value.') { incomplete_term.and(incomplete_term).wrap.to_s }
+    assert_raises(LSolr::IncompleteQueryError) { incomplete_term.and(incomplete_term).wrap.to_s }
   end
 
   def test_not
@@ -106,8 +151,8 @@ class TestLSolr < Minitest::Test
     assert_equal 'field:word^1.5', LSolr.new(:field).match('word').boost(1.5).to_s
     assert_equal 'field:word^1.5', LSolr.new(:field).boost(1.5).match('word').to_s
     assert_equal 'field:word^0.1', LSolr.new(:field).boost(0.1).match('word').to_s
-    assert_raises(LSolr::ArgumentError, 'The boost factor numver must be positive. 0.0 given.') { LSolr.new(:field).match('word').boost(0.0) }
-    assert_raises(LSolr::ArgumentError, 'The boost factor numver must be positive. -0.1 given.') { LSolr.new(:field).match('word').boost(-0.1) }
+    assert_raises(LSolr::ArgumentError) { LSolr.new(:field).match('word').boost(0.0) }
+    assert_raises(LSolr::ArgumentError) { LSolr.new(:field).match('word').boost(-0.1) }
   end
 
   def test_match
@@ -141,8 +186,8 @@ class TestLSolr < Minitest::Test
     assert_equal 'field:word~0.0', LSolr.new(:field).fuzzy_match('word', distance: 0.0).to_s
     assert_equal 'field:word~2.0', LSolr.new(:field).fuzzy_match('word', distance: 2.0).to_s
     assert_equal 'field:word~2.0', LSolr.new(:field).fuzzy_match('word').to_s
-    assert_raises(LSolr::RangeError, 'Out of 0.0..1.0. -0.1 given.') { LSolr.new(:field).fuzzy_match('word', distance: -0.1).to_s }
-    assert_raises(LSolr::RangeError, 'Out of 0.0..1.0. 2.1 given.') { LSolr.new(:field).fuzzy_match('word', distance: 2.1).to_s }
+    assert_raises(LSolr::RangeError) { LSolr.new(:field).fuzzy_match('word', distance: -0.1).to_s }
+    assert_raises(LSolr::RangeError) { LSolr.new(:field).fuzzy_match('word', distance: 2.1).to_s }
     assert_equal 'field:word~2.0', LSolr.new(:field).fuzzy_match('wo|rd').to_s
   end
 
@@ -156,7 +201,7 @@ class TestLSolr < Minitest::Test
     assert_equal 'field:[-10.5 TO 20.7]', LSolr.new(:field).greater_than_or_equal_to(-10.5).less_than_or_equal_to(20.7).to_s
     assert_equal 'field:[NOW+9HOURS-7DAYS TO *]', LSolr.new(:field).greater_than_or_equal_to('NOW+9HOURS-7DAYS').less_than_or_equal_to('*').to_s
 
-    assert_raises(LSolr::IncompleteQueryError, 'Please specify a search condition.') { LSolr.new(:field).greater_than(10).to_s }
+    assert_raises(LSolr::IncompleteQueryError) { LSolr.new(:field).greater_than(10).to_s }
 
     from = Date.new(2000, 1, 1)
     to = Date.new(3000, 12, 31)

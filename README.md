@@ -95,6 +95,13 @@ require 'lsolr'
 #=> 'NOT (field:a OR field:b OR field:c)'
 ```
 
+```ruby
+require 'lsolr'
+
+LSolr.build('field:value').to_s
+#=> 'field:value'
+```
+
 ## See also
 * [The Standard Query Parser](https://lucene.apache.org/solr/guide/7_1/the-standard-query-parser.html)
 * [RSolr](https://github.com/rsolr/rsolr)
