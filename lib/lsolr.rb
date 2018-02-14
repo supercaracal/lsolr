@@ -149,13 +149,10 @@ class LSolr
   # Returns Apache Solr standard lucene type query string.
   #
   # @return [String] a stringified query
-  def to_s # rubocop:disable Metrics/AbcSize
+  def to_s
     raise IncompleteQueryError, 'Please specify search field and value.' if blank?
 
-    expr = build_term_expr
-    expr = "#{expr_not}#{left_parentheses.join}#{expr}#{right_parentheses.join}"
-    expr = "#{prev} #{operator} #{expr}" if !prev.nil? && prev.present?
-    "#{expr}#{@boost}"
+    decorate_term_expr_if_needed(build_term_expr)
   end
 
   alias to_str to_s
@@ -443,5 +440,11 @@ class LSolr
     else
       "#{@field}:#{@value}"
     end
+  end
+
+  def decorate_term_expr_if_needed(expr)
+    expr = "#{expr_not}#{left_parentheses.join}#{expr}#{right_parentheses.join}"
+    expr = "#{prev} #{operator} #{expr}" if !prev.nil? && prev.present?
+    "#{expr}#{@boost}"
   end
 end
