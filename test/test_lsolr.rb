@@ -176,6 +176,7 @@ class TestLSolr < Minitest::Test
     assert_raises(LSolr::ArgumentError) { LSolr.new(:field).match_in(nil) }
     assert_raises(LSolr::ArgumentError) { LSolr.new(:field).match_in('') }
     assert_raises(LSolr::ArgumentError) { LSolr.new(:field).match_in({}) }
+    assert_raises(LSolr::ArgumentError) { LSolr.new(:field).match_in(0) }
   end
 
   def test_date_time_match

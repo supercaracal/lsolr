@@ -255,7 +255,7 @@ class LSolr
   #
   # @return [LSolr] self instance
   def match_in(values)
-    raise ArgumentError, "#{values.inspect} given. Must be a not empty array." if values.nil? || values.empty? || !values.is_a?(Array)
+    raise ArgumentError, "#{values.inspect} given. Must be a not empty array." if values.nil? || !values.is_a?(Array) || values.empty?
 
     values = values.map { |v| clean(v) }
     @value = "(#{values.join(MULTI_VALUE_MATCH_DELIMITER)})"
