@@ -65,7 +65,7 @@ LSolr.build(params).to_s
 #    field08:"6000-05-31T06:31:43Z" AND
 #    field09:"5000-06-30T12:59:03Z" AND
 #    field10:foo~2.0 AND
-#    (field11:1 OR field11:2 OR field11:3) AND
+#    field11:(1 2 3) AND
 #    field12:[1 TO 10] AND
 #    field13:[20 TO 40} AND
 #    field14:[3000-01-01T00:00:00Z TO 4000-12-31T00:00:00Z] AND

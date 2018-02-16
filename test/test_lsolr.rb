@@ -32,7 +32,7 @@ class TestLSolr < Minitest::Test
 
     expected = 'field01:hoge AND field02:fuga AND field03:14 AND field04:7.3 AND field05:true AND field06:false'\
       ' AND field07:"7000-07-01T00:00:00Z" AND field08:"6000-05-31T06:31:43Z" AND field09:"5000-06-30T12:59:03Z"'\
-      ' AND field10:foo~2.0 AND (field11:1 OR field11:2 OR field11:3) AND field12:[1 TO 10] AND field13:[20 TO 40}'\
+      ' AND field10:foo~2.0 AND field11:(1 2 3) AND field12:[1 TO 10] AND field13:[20 TO 40}'\
       ' AND field14:[3000-01-01T00:00:00Z TO 4000-12-31T00:00:00Z] AND field15:[3.0 TO 4.0]'
 
     assert_equal expected, LSolr.build(params).to_s
@@ -143,7 +143,7 @@ class TestLSolr < Minitest::Test
   def test_not
     assert_equal 'NOT field:word', LSolr.new(:field).not.match('word').to_s
     assert_equal 'NOT field:word', LSolr.new(:field).match('word').not.to_s
-    assert_equal 'NOT (field:1 OR field:2 OR field:3)', LSolr.build(field: [1, 2, 3]).not.to_s
+    assert_equal 'NOT field:(1 2 3)', LSolr.build(field: [1, 2, 3]).not.to_s
 
     cond1 = LSolr.new(:field1).match('word1')
     cond2 = LSolr.new(:field2).not.match('word2')
@@ -167,6 +167,15 @@ class TestLSolr < Minitest::Test
     assert_equal 'field:"Tiffany Co."', LSolr.new(:field).match('Tiffany&Co.').to_s
     assert_equal 'field:\\NOTword\\ANDword\\ORword', LSolr.new(:field).match('NOTwordANDwordORword').to_s
     assert_equal 'field:not1and2or3', LSolr.new(:field).match('not1and2or3').to_s
+  end
+
+  def test_match_in
+    assert_equal 'field:(1 2 3)', LSolr.new(:field).match_in([1, 2, 3]).to_s
+    assert_equal 'field:(a b c)', LSolr.new(:field).match_in(%w[a b c]).to_s
+    assert_equal 'field:(a b c)', LSolr.new(:field).match_in(%i[a b c]).to_s
+    assert_raises(LSolr::ArgumentError) { LSolr.new(:field).match_in(nil) }
+    assert_raises(LSolr::ArgumentError) { LSolr.new(:field).match_in('') }
+    assert_raises(LSolr::ArgumentError) { LSolr.new(:field).match_in({}) }
   end
 
   def test_date_time_match

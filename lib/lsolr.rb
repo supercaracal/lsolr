@@ -30,7 +30,7 @@ require 'date'
 #    LSolr.build(params).to_s
 #    #=> 'field01:hoge AND field02:fuga AND field03:14 AND field04:7.3 AND field05:true
 #    #    AND field06:false AND field07:"7000-07-01T00:00:00Z" AND field08:"6000-05-31T06:31:43Z"
-#    #    AND field09:"5000-06-30T12:59:03Z" AND field10:foo~2.0 AND (field11:1 OR field11:2 OR field11:3)
+#    #    AND field09:"5000-06-30T12:59:03Z" AND field10:foo~2.0 AND field11:(1 2 3)
 #    #    AND field12:[1 TO 10] AND field13:[20 TO 40} AND field14:[3000-01-01T00:00:00Z TO 4000-12-31T00:00:00Z]
 #    #    AND field15:[3.0 TO 4.0]'
 #
@@ -66,6 +66,7 @@ class LSolr
   PROXIMITY = '~'
   BOOST = '^'
   PHRASE_MATCH_DELIMITER = ' '
+  MULTI_VALUE_MATCH_DELIMITER = ' '
   FUZZY_MATCH_DISTANCE_RANGE = (0.0..2.0).freeze
   FORMAT_DATE_TIME = '%Y-%m-%dT%H:%M:%SZ'
   FORMAT_MILLISECOND_FOR_DATE_TYPE = '%Q'
@@ -84,7 +85,7 @@ class LSolr
   class << self
     # Builds composite query and returns builder instance.
     #
-    # @param params [Hash{Symbol => String, Integer, Float, true, false, Range, Date, Time}, String] query terms or a raw query
+    # @param params [Hash{Symbol => String, Symbol, Integer, Float, true, false, Range, Date, Time, Array<String, Symbol, Integer>}, String] query terms or a raw query
     #
     # @return [LSolr] a instance
     def build(params)
@@ -112,7 +113,7 @@ class LSolr
     def build_array_query(field, values)
       return new(field) if values.empty?
 
-      values.map { |v| build_query(field, v) }.reduce { |a, e| a.or(e) }.wrap
+      new(field).match_in(values)
     end
 
     def build_range_query(field, value)
@@ -242,6 +243,19 @@ class LSolr
       @value = values.join
       self
     end
+  end
+
+  # Builds a normal multi value query expression.
+  #
+  # @param value [Array<String, Symbol, Integer>] a search words or a filter values
+  #
+  # @return [LSolr] self instance
+  def match_in(values)
+    raise ArgumentError, "#{values.inspect} given. Must be a not empty array." if values.nil? || values.empty? || !values.is_a?(Array)
+
+    values = values.map { |v| clean(v) }
+    @value = "(#{values.join(MULTI_VALUE_MATCH_DELIMITER)})"
+    self
   end
 
   # Builds a normal query expression with dates and times.
