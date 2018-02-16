@@ -46,6 +46,10 @@ require 'date'
 #    left.or(right).to_s
 #    #=> '(bool_field:true AND date_field1:[* TO 2000-06-30T23:59:59Z] AND date_field2:{2000-07-01T00:00:00Z TO 2001-01-01T00:00:00Z})
 #    #    OR (bool_field:false AND (date_field1:[* TO 2000-06-30T23:59:59Z] OR date_field2:{2000-07-01T00:00:00Z TO 2001-01-01T00:00:00Z}))'
+#
+# @example How to use. Part 4:
+#    LSolr.build('field:value').to_s
+#    #=> 'field:value'
 class LSolr
   ArgumentError = Class.new(::ArgumentError)
   RangeError = Class.new(::RangeError)
