@@ -83,6 +83,7 @@ class LSolr
   WILD_CARD = '*'
   PROXIMITY = '~'
   BOOST = '^'
+  CONSTANT_SCORE = '^='
   PHRASE_MATCH_DELIMITER = ' '
   MULTI_VALUE_MATCH_DELIMITER = ' '
   FUZZY_MATCH_DISTANCE_RANGE = (0.0..2.0).freeze
@@ -160,7 +161,7 @@ class LSolr
       field(field_name)
     end
 
-    @expr_not = @value = @range_first = @range_last = @boost = @raw = ''
+    @expr_not = @value = @range_first = @range_last = @boost = @constant_score = @raw = ''
     @left_parentheses = []
     @right_parentheses = []
   end
@@ -249,6 +250,20 @@ class LSolr
     raise ArgumentError, "The boost factor must be a positive number (0 < n < 1). #{factor.inspect} given." unless valid_boost_factor?(factor)
 
     @boost = "#{BOOST}#{factor}"
+    self
+  end
+
+  # Specifies scoring result in expression.
+  #
+  # @see https://lucene.apache.org/solr/guide/7_1/the-standard-query-parser.html#constant-score-with Constant Score with "^="
+  #
+  # @param score [Float] a constant score
+  #
+  # @return [LSolr] self instance
+  def constant_score(score)
+    raise ArgumentError, "The constant score must be a number. #{score.inspect} given." unless valid_score?(score)
+
+    @constant_score = "#{CONSTANT_SCORE}#{score}"
     self
   end
 
@@ -445,6 +460,10 @@ class LSolr
     (v.is_a?(Float) || v.is_a?(Integer)) && v > 0 && v < 1
   end
 
+  def valid_score?(v)
+    v.is_a?(Float) || v.is_a?(Integer)
+  end
+
   def clean(value, symbols: RESERVED_SYMBOLS)
     value.to_s
          .tr(symbols.join, REPLACEMENT_CHAR)
@@ -494,6 +513,7 @@ class LSolr
   def decorate_term_expr_if_needed(expr)
     expr = "#{expr_not}#{left_parentheses.join}#{expr}#{right_parentheses.join}"
     expr = "#{prev} #{operator} #{expr}" if !prev.nil? && prev.present?
-    "#{expr}#{@boost}"
+    scoring = present_string?(@constant_score) ? @constant_score : @boost
+    "#{expr}#{scoring}"
   end
 end

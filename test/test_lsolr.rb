@@ -156,6 +156,24 @@ class TestLSolr < Minitest::Test
     assert_raises(LSolr::ArgumentError) { LSolr.new(:field).match('word').boost(:'') }
     assert_raises(LSolr::ArgumentError) { LSolr.new(:field).match('word').boost([]) }
     assert_raises(LSolr::ArgumentError) { LSolr.new(:field).match('word').boost({}) }
+    assert_equal 'f:1^0.5 AND g:2', LSolr.new(:f).match(1).boost(0.5).and(LSolr.new(:g).match(2)).to_s
+    assert_equal 'f:1 AND g:2^0.5', LSolr.new(:f).match(1).and(LSolr.new(:g).match(2).boost(0.5)).to_s
+    assert_equal 'f:1 AND g:2^0.5', LSolr.new(:f).match(1).and(LSolr.new(:g).match(2)).boost(0.5).to_s
+    assert_equal '(f:1 AND g:2)^0.5', LSolr.new(:f).match(1).and(LSolr.new(:g).match(2)).wrap.boost(0.5).to_s
+  end
+
+  def test_constant_score
+    assert_equal 'field:word^=1.0', LSolr.new(:field).match('word').constant_score(1.0).to_s
+    assert_equal 'field:word^=1.0', LSolr.new(:field).constant_score(1.0).match('word').to_s
+    assert_raises(LSolr::ArgumentError) { LSolr.new(:field).match('word').constant_score(nil) }
+    assert_raises(LSolr::ArgumentError) { LSolr.new(:field).match('word').constant_score('') }
+    assert_raises(LSolr::ArgumentError) { LSolr.new(:field).match('word').constant_score(:'') }
+    assert_raises(LSolr::ArgumentError) { LSolr.new(:field).match('word').constant_score([]) }
+    assert_raises(LSolr::ArgumentError) { LSolr.new(:field).match('word').constant_score({}) }
+    assert_equal 'f:1^=0.5 AND g:2', LSolr.new(:f).match(1).constant_score(0.5).and(LSolr.new(:g).match(2)).to_s
+    assert_equal 'f:1 AND g:2^=0.5', LSolr.new(:f).match(1).and(LSolr.new(:g).match(2).constant_score(0.5)).to_s
+    assert_equal 'f:1 AND g:2^=0.5', LSolr.new(:f).match(1).and(LSolr.new(:g).match(2)).constant_score(0.5).to_s
+    assert_equal '(f:1 AND g:2)^=0.5', LSolr.new(:f).match(1).and(LSolr.new(:g).match(2)).wrap.constant_score(0.5).to_s
   end
 
   def test_match
@@ -256,6 +274,11 @@ class TestLSolr < Minitest::Test
     assert !term1.equal?(composite)
     assert !term2.equal?(composite)
     assert_equal 'field1:word1 OR field2:word2', composite.to_s
+  end
+
+  def test_constant_score_takes_priority_over_boost_factor
+    assert_equal 'f:1^=0.6', LSolr.new(:f).match(1).boost(0.5).constant_score(0.6).to_s
+    assert_equal 'f:1^=0.6', LSolr.new(:f).match(1).constant_score(0.6).boost(0.5).to_s
   end
 
   def test_can_build_from_hash_object
