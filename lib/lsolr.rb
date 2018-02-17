@@ -107,6 +107,8 @@ class LSolr
     # @param params [Hash{Symbol => String, Symbol, Integer, Float, true, false, Range, Date, Time, Array<String, Symbol, Integer>}, String] query terms or a raw query
     #
     # @return [LSolr] a instance
+    #
+    # @raise [LSolr::ArgumentError] if specified parameters have a not supported type value
     def build(params)
       case params
       when Hash then params.map { |f, v| build_query(f, v) }.reduce { |a, e| a.and(e) }
@@ -175,6 +177,8 @@ class LSolr
   # Returns Apache Solr standard lucene type query string.
   #
   # @return [String] a stringified query
+  #
+  # @raise [LSolr::IncompleteQueryError] if the query is incompletely
   def to_s
     raise IncompleteQueryError, 'Please specify a term of search.' if blank?
 
@@ -203,6 +207,8 @@ class LSolr
   # @param name [String, Symbol] a field name
   #
   # @return [LSolr] self instance
+  #
+  # @raise [LSolr::ArgumentError] if specified field name is empty
   def field(name)
     raise ArgumentError, "The field name must be a not empty string value. #{name.inspect} given." unless present_string?(name)
 
@@ -215,6 +221,8 @@ class LSolr
   # @param query [String] a raw query string
   #
   # @return [LSolr] self instance
+  #
+  # @raise [LSolr::ArgumentError] if specified raw query string is empty
   def raw(query)
     raise ArgumentError, "The raw query must be a not empty string value. #{query.inspect} given." unless present_string?(query)
 
@@ -252,6 +260,8 @@ class LSolr
   # @param factor [Float] a boost factor number
   #
   # @return [LSolr] self instance
+  #
+  # @raise [LSolr::ArgumentError] if specified boost factor is invalid
   def boost(factor)
     raise ArgumentError, "The boost factor must be a positive number. #{factor.inspect} given." unless valid_boost_factor?(factor)
 
@@ -266,6 +276,8 @@ class LSolr
   # @param score [Float] a constant score
   #
   # @return [LSolr] self instance
+  #
+  # @raise [LSolr::ArgumentError] if specified score number is invalid
   def constant_score(score)
     raise ArgumentError, "The constant score must be a number. #{score.inspect} given." unless valid_score?(score)
 
@@ -294,6 +306,8 @@ class LSolr
   # @param value [Array<String, Symbol, Integer>] a search words or a filter values
   #
   # @return [LSolr] self instance
+  #
+  # @raise [LSolr::ArgumentError] if specified value is a empty array or not array
   def match_in(values)
     raise ArgumentError, "#{values.inspect} given. It must be a not empty array." unless present_array?(values)
 
@@ -351,6 +365,8 @@ class LSolr
   # @param distance [Float] a proximity distance
   #
   # @return [LSolr] self instance
+  #
+  # @raise [LSolr::RangeError] if specified distance is out of range
   def fuzzy_match(value, distance: 2.0)
     raise RangeError, "Out of #{FUZZY_MATCH_DISTANCE_RANGE}. #{distance} given." unless FUZZY_MATCH_DISTANCE_RANGE.member?(distance)
     @value = "#{clean(value).split.join}#{PROXIMITY}#{distance}"
