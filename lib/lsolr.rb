@@ -247,7 +247,7 @@ class LSolr
   #
   # @return [LSolr] self instance
   def boost(factor)
-    raise ArgumentError, "The boost factor must be a positive number (0 < n < 1). #{factor.inspect} given." unless valid_boost_factor?(factor)
+    raise ArgumentError, "The boost factor must be a positive number. #{factor.inspect} given." unless valid_boost_factor?(factor)
 
     @boost = "#{BOOST}#{factor}"
     self
@@ -457,7 +457,7 @@ class LSolr
   end
 
   def valid_boost_factor?(v)
-    (v.is_a?(Float) || v.is_a?(Integer)) && v > 0 && v < 1
+    (v.is_a?(Float) || v.is_a?(Integer)) && v > 0
   end
 
   def valid_score?(v)

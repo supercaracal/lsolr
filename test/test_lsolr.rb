@@ -145,11 +145,10 @@ class TestLSolr < Minitest::Test
   end
 
   def test_boost
-    assert_equal 'field:word^0.9', LSolr.new(:field).match('word').boost(0.9).to_s
-    assert_equal 'field:word^0.9', LSolr.new(:field).boost(0.9).match('word').to_s
+    assert_equal 'field:word^1.0', LSolr.new(:field).match('word').boost(1.0).to_s
+    assert_equal 'field:word^1.0', LSolr.new(:field).boost(1.0).match('word').to_s
     assert_equal 'field:word^0.1', LSolr.new(:field).boost(0.1).match('word').to_s
     assert_raises(LSolr::ArgumentError) { LSolr.new(:field).match('word').boost(0.0) }
-    assert_raises(LSolr::ArgumentError) { LSolr.new(:field).match('word').boost(1.0) }
     assert_raises(LSolr::ArgumentError) { LSolr.new(:field).match('word').boost(-0.1) }
     assert_raises(LSolr::ArgumentError) { LSolr.new(:field).match('word').boost(nil) }
     assert_raises(LSolr::ArgumentError) { LSolr.new(:field).match('word').boost('') }
