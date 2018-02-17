@@ -222,7 +222,7 @@ class LSolr
 
   # Adds parentheses to query expression.
   #
-  # @see https://lucene.apache.org/solr/guide/7_1/the-standard-query-parser.html#grouping-terms-to-form-sub-queries Grouping Terms to Form Sub-Queries
+  # @see https://lucene.apache.org/solr/guide/7_2/the-standard-query-parser.html#grouping-terms-to-form-sub-queries Grouping Terms to Form Sub-Queries
   #
   # @return [LSolr] copied self instance
   def wrap
@@ -234,7 +234,7 @@ class LSolr
 
   # Adds the boolean operator `NOT` to query expression.
   #
-  # @see https://lucene.apache.org/solr/guide/7_1/the-standard-query-parser.html#the-boolean-operator-not The Boolean Operator NOT ("!")
+  # @see https://lucene.apache.org/solr/guide/7_2/the-standard-query-parser.html#the-boolean-operator-not The Boolean Operator NOT ("!")
   #
   # @return [LSolr] self instance
   def not
@@ -245,7 +245,7 @@ class LSolr
 
   # Boosts a query expression.
   #
-  # @see https://lucene.apache.org/solr/guide/7_1/the-standard-query-parser.html#boosting-a-term-with Boosting a Term with "^"
+  # @see https://lucene.apache.org/solr/guide/7_2/the-standard-query-parser.html#boosting-a-term-with Boosting a Term with "^"
   #
   # @param factor [Float] a boost factor number
   #
@@ -259,7 +259,7 @@ class LSolr
 
   # Specifies scoring result in expression.
   #
-  # @see https://lucene.apache.org/solr/guide/7_1/the-standard-query-parser.html#constant-score-with Constant Score with "^="
+  # @see https://lucene.apache.org/solr/guide/7_2/the-standard-query-parser.html#constant-score-with Constant Score with "^="
   #
   # @param score [Float] a constant score
   #
@@ -302,7 +302,7 @@ class LSolr
 
   # Builds a normal query expression with dates and times.
   #
-  # @see https://lucene.apache.org/solr/guide/6_6/working-with-dates.html Working with Dates
+  # @see https://lucene.apache.org/solr/guide/7_2/working-with-dates.html Working with Dates
   #
   # @param value [String, Date, Time] a filter value
   #
@@ -315,7 +315,7 @@ class LSolr
 
   # Builds a prefix search query expression.
   #
-  # @see https://lucene.apache.org/solr/guide/7_1/the-standard-query-parser.html#wildcard-searches Wildcard Searches
+  # @see https://lucene.apache.org/solr/guide/7_2/the-standard-query-parser.html#wildcard-searches Wildcard Searches
   #
   # @param value [String] a search word
   #
@@ -327,8 +327,8 @@ class LSolr
 
   # Builds a phrase or proximity search query expression.
   #
-  # @see https://lucene.apache.org/solr/guide/7_1/the-standard-query-parser.html#grouping-clauses-within-a-field Grouping Clauses within a Field
-  # @see https://lucene.apache.org/solr/guide/7_1/the-standard-query-parser.html#proximity-searches Proximity Searches
+  # @see https://lucene.apache.org/solr/guide/7_2/the-standard-query-parser.html#grouping-clauses-within-a-field Grouping Clauses within a Field
+  # @see https://lucene.apache.org/solr/guide/7_2/the-standard-query-parser.html#proximity-searches Proximity Searches
   #
   # @param values [Array<String>] search words
   # @param distance [Integer] proximity distance
@@ -343,7 +343,7 @@ class LSolr
 
   # Builds a fuzzy search query expression.
   #
-  # @see https://lucene.apache.org/solr/guide/7_1/the-standard-query-parser.html#fuzzy-searches Fuzzy Searches
+  # @see https://lucene.apache.org/solr/guide/7_2/the-standard-query-parser.html#fuzzy-searches Fuzzy Searches
   #
   # @param value [String] a search word
   # @param distance [Float] a proximity distance
@@ -357,7 +357,7 @@ class LSolr
 
   # Builds a range search query expression.
   #
-  # @see https://lucene.apache.org/solr/guide/7_1/the-standard-query-parser.html#range-searches Range Searches
+  # @see https://lucene.apache.org/solr/guide/7_2/the-standard-query-parser.html#range-searches Range Searches
   #
   # @param value [String, Integer, Date, Time] a filter value
   #
@@ -369,7 +369,7 @@ class LSolr
 
   # Builds a range search query expression.
   #
-  # @see https://lucene.apache.org/solr/guide/7_1/the-standard-query-parser.html#range-searches Range Searches
+  # @see https://lucene.apache.org/solr/guide/7_2/the-standard-query-parser.html#range-searches Range Searches
   #
   # @param value [String, Integer, Date, Time] a filter value
   #
@@ -381,7 +381,7 @@ class LSolr
 
   # Builds a range search query expression.
   #
-  # @see https://lucene.apache.org/solr/guide/7_1/the-standard-query-parser.html#range-searches Range Searches
+  # @see https://lucene.apache.org/solr/guide/7_2/the-standard-query-parser.html#range-searches Range Searches
   #
   # @param value [String, Integer, Date, Time] a filter value
   #
@@ -393,7 +393,7 @@ class LSolr
 
   # Builds a range search query expression.
   #
-  # @see https://lucene.apache.org/solr/guide/7_1/the-standard-query-parser.html#range-searches Range Searches
+  # @see https://lucene.apache.org/solr/guide/7_2/the-standard-query-parser.html#range-searches Range Searches
   #
   # @param value [String, Integer, Date, Time] a filter value
   #
@@ -405,7 +405,7 @@ class LSolr
 
   # Builds a composite query expression.
   #
-  # @see https://lucene.apache.org/solr/guide/7_1/the-standard-query-parser.html#the-boolean-operator-and The Boolean Operator AND ("&&")
+  # @see https://lucene.apache.org/solr/guide/7_2/the-standard-query-parser.html#the-boolean-operator-and The Boolean Operator AND ("&&")
   #
   # @param another [LSolr, Hash, String] another query builder instance or query params or raw query string
   #
@@ -416,7 +416,7 @@ class LSolr
 
   # Builds a composite query expression.
   #
-  # @see https://lucene.apache.org/solr/guide/7_1/the-standard-query-parser.html#boolean-operators-supported-by-the-standard-query-parser Boolean Operators Supported by the Standard Query Parser
+  # @see https://lucene.apache.org/solr/guide/7_2/the-standard-query-parser.html#boolean-operators-supported-by-the-standard-query-parser Boolean Operators Supported by the Standard Query Parser
   #
   # @param another [LSolr, Hash, String] another query builder instance or query params or raw query string
   #
