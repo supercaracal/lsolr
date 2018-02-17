@@ -91,15 +91,17 @@ left.or(right).to_s
 ```ruby
 require 'lsolr'
 
-['a', 'b', 'c'].map { |v| LSolr.build(field: v) }.reduce { |a, e| a.or(e) }.wrap.not.to_s
-#=> 'NOT (field:a OR field:b OR field:c)'
+%w[a b c].map { |v| LSolr.new(:field).prefix_match("#{v}*") }
+         .reduce { |a, e| a.or(e) }
+         .wrap.not.to_s
+#=> 'NOT (field:a* OR field:b* OR field:c*)'
 ```
 
 ```ruby
 require 'lsolr'
 
-LSolr.build('field:value').to_s
-#=> 'field:value'
+LSolr.build('a:1').and(LSolr.build(b: 2)).to_s
+#=> 'a:1 AND b:2'
 ```
 
 ## See also

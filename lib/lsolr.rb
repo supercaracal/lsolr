@@ -28,11 +28,21 @@ require 'date'
 #    }
 #
 #    LSolr.build(params).to_s
-#    #=> 'field01:hoge AND field02:fuga AND field03:14 AND field04:7.3 AND field05:true
-#    #    AND field06:false AND field07:"7000-07-01T00:00:00Z" AND field08:"6000-05-31T06:31:43Z"
-#    #    AND field09:"5000-06-30T12:59:03Z" AND field10:foo~2.0 AND field11:(1 2 3)
-#    #    AND field12:[1 TO 10] AND field13:[20 TO 40} AND field14:[3000-01-01T00:00:00Z TO 4000-12-31T00:00:00Z]
-#    #    AND field15:[3.0 TO 4.0]'
+#    #=> 'field01:hoge AND
+#    #    field02:fuga AND
+#    #    field03:14 AND
+#    #    field04:7.3 AND
+#    #    field05:true AND
+#    #    field06:false AND
+#    #    field07:"7000-07-01T00:00:00Z" AND
+#    #    field08:"6000-05-31T06:31:43Z" AND
+#    #    field09:"5000-06-30T12:59:03Z" AND
+#    #    field10:foo~2.0 AND
+#    #    field11:(1 2 3) AND
+#    #    field12:[1 TO 10] AND
+#    #    field13:[20 TO 40} AND
+#    #    field14:[3000-01-01T00:00:00Z TO 4000-12-31T00:00:00Z] AND
+#    #    field15:[3.0 TO 4.0]'
 #
 # @example How to use. Part 3:
 #    bool1 = LSolr.new(:bool_field).match(true)
@@ -48,8 +58,12 @@ require 'date'
 #    #    OR (bool_field:false AND (date_field1:[* TO 2000-06-30T23:59:59Z] OR date_field2:{2000-07-01T00:00:00Z TO 2001-01-01T00:00:00Z}))'
 #
 # @example How to use. Part 4:
-#    LSolr.build('field:value').to_s
-#    #=> 'field:value'
+#    %w[a b c].map { |v| LSolr.new(:field).prefix_match("#{v}*") }.reduce { |a, e| a.or(e) }.wrap.not.to_s
+#    #=> 'NOT (field:a* OR field:b* OR field:c*)'
+#
+# @example How to use. Part 5:
+#    LSolr.build('a:1').and(LSolr.build(b: 2)).to_s
+#    #=> 'a:1 AND b:2'
 class LSolr
   ArgumentError = Class.new(::ArgumentError)
   RangeError = Class.new(::RangeError)
