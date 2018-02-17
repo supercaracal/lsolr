@@ -15,7 +15,7 @@ term = field:value = a LSolr instance
 term <-- term <-- term <-- ... <-- term
 ```
 
-It supports only [the standard query](https://lucene.apache.org/solr/guide/7_1/the-standard-query-parser.html).
+It supports only [the standard query](https://lucene.apache.org/solr/guide/7_2/the-standard-query-parser.html).
 It isn't Apache Solr client. It has only feature as query builder. Please use it with [RSolr](https://github.com/rsolr/rsolr).
 
 ## Installation
