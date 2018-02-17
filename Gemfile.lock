@@ -1,20 +1,20 @@
 PATH
   remote: .
   specs:
-    lsolr (0.2.0)
+    lsolr (0.2.1)
 
 GEM
   remote: https://rubygems.org/
   specs:
-    ast (2.3.0)
-    codeclimate-test-reporter (1.0.8)
-      simplecov (<= 0.13)
+    ast (2.4.0)
+    codeclimate-test-reporter (1.0.7)
+      simplecov
     docile (1.1.5)
     json (2.1.0)
-    minitest (5.11.1)
+    minitest (5.11.3)
     parallel (1.12.1)
-    parser (2.4.0.2)
-      ast (~> 2.3)
+    parser (2.5.0.0)
+      ast (~> 2.4.0)
     powerpack (0.1.1)
     rainbow (3.0.0)
     rake (12.3.0)
@@ -26,7 +26,7 @@ GEM
       ruby-progressbar (~> 1.7)
       unicode-display_width (~> 1.0, >= 1.0.1)
     ruby-progressbar (1.9.0)
-    simplecov (0.13.0)
+    simplecov (0.15.1)
       docile (~> 1.1.0)
       json (>= 1.8, < 3)
       simplecov-html (~> 0.10.0)
