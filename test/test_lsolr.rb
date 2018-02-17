@@ -53,6 +53,12 @@ class TestLSolr < Minitest::Test
     assert_equal 'field:value', LSolr.new(:field).match('value').to_str
   end
 
+  def test_inspect
+    assert_match(/\A#<LSolr:0x[a-z0-9]{16} ``>\z/, LSolr.new.inspect)
+    assert_match(/\A#<LSolr:0x[a-z0-9]{16} `f:1`>\z/, LSolr.new(:f).match(1).inspect)
+    assert_match(/\A#<LSolr:0x[a-z0-9]{16} `f:1 AND g:2`>\z/, LSolr.new(:f).match(1).and(LSolr.new(:g).match(2)).inspect)
+  end
+
   def test_blank?
     assert_equal true, LSolr.new.blank?
     assert_equal true, LSolr.new(nil).blank?

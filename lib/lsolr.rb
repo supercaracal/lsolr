@@ -87,10 +87,11 @@ class LSolr
   PHRASE_MATCH_DELIMITER = ' '
   MULTI_VALUE_MATCH_DELIMITER = ' '
   FUZZY_MATCH_DISTANCE_RANGE = (0.0..2.0).freeze
-  FORMAT_DATE_TIME = '%Y-%m-%dT%H:%M:%SZ'
+  FORMAT_DATE_TIME = '%Y-%m-%dT%H:%M:%SZ' # rubocop:disable Style/FormatStringToken
   FORMAT_MILLISECOND_FOR_DATE_TYPE = '%Q'
   FORMAT_MILLISECOND_FOR_TIME_TYPE = '%L'
-  FORMAT_SECOND = '%s'
+  FORMAT_SECOND = '%s' # rubocop:disable Style/FormatStringToken
+  FORMAT_INSPECT = '#<%<class>s:%<object>#018x `%<query>s`>'
 
   PARENTHESIS_LEFT = '('
   PARENTHESIS_RIGHT = ')'
@@ -186,6 +187,15 @@ class LSolr
   end
 
   alias to_str to_s
+
+  # Returns instance information.
+  #
+  # @return [String] instance information
+  def inspect
+    format(FORMAT_INSPECT, class: self.class.name,
+                           object: object_id << 1,
+                           query: present? ? to_s : '')
+  end
 
   # A query is blank if term is incomplete in expression.
   #
@@ -513,7 +523,7 @@ class LSolr
 
     return date.strftime(FORMAT_DATE_TIME) if msec_str == '000'
 
-    "#{date.strftime('%Y-%m-%dT%H:%M:%S')}.#{msec_str}Z"
+    "#{date.strftime('%Y-%m-%dT%H:%M:%S')}.#{msec_str}Z" # rubocop:disable Style/FormatStringToken
   end
 
   def link(another, operator)
