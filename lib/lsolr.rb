@@ -425,7 +425,7 @@ class LSolr
   #
   # @return [LSolr] a first term of query.
   def head
-    if !prev.nil? && prev.present?
+    if present_query?(prev)
       prev.head
     else
       self
@@ -435,7 +435,7 @@ class LSolr
   private
 
   def initialize_copy(obj)
-    obj.prev = obj.prev.dup if !obj.prev.nil? && obj.prev.present?
+    obj.prev = obj.prev.dup if present_query?(obj.prev)
     obj.left_parentheses = obj.left_parentheses.dup
     obj.right_parentheses = obj.right_parentheses.dup
   end
@@ -454,6 +454,10 @@ class LSolr
 
   def present_array?(v)
     !v.nil? && v.is_a?(Array) && !v.compact.empty? && v.map(&:to_s).map(&:empty?).none?
+  end
+
+  def present_query?(v)
+    !v.nil? && v.present?
   end
 
   def valid_boost_factor?(v)
@@ -491,7 +495,7 @@ class LSolr
   end
 
   def link(another, operator)
-    return self if another.nil? || another.blank?
+    return self unless present_query?(another)
 
     another = another.dup
     head = another.head
@@ -512,7 +516,7 @@ class LSolr
 
   def decorate_term_expr_if_needed(expr)
     expr = "#{expr_not}#{left_parentheses.join}#{expr}#{right_parentheses.join}"
-    expr = "#{prev} #{operator} #{expr}" if !prev.nil? && prev.present?
+    expr = "#{prev} #{operator} #{expr}" if present_query?(prev)
     scoring = present_string?(@constant_score) ? @constant_score : @boost
     "#{expr}#{scoring}"
   end
