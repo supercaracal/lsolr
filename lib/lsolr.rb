@@ -110,7 +110,7 @@ class LSolr
       case params
       when Hash then params.map { |f, v| build_query(f, v) }.reduce { |a, e| a.and(e) }
       when String then new.raw(params)
-      else raise TypeError, 'Could not build solr query. Please specify a Hash or String value.'
+      else raise TypeError, "Could not build solr query. Please specify a Hash or String value. #{params.inspect} given."
       end
     end
 
@@ -124,7 +124,7 @@ class LSolr
       when Array then build_array_query(field, value)
       when Range then build_range_query(field, value)
       when Enumerator then build_enumerator_query(field, value)
-      else raise TypeError, "Could not build solr query. field: #{field}, value: #{value.inspect}"
+      else raise TypeError, "Could not build solr query. field: #{field.inspect}, value: #{value.inspect} given."
       end
     end
 
@@ -151,25 +151,25 @@ class LSolr
 
   # Create a new query builder instance.
   #
-  # @param field [String, Symbol] a field name
+  # @param field_name [String, Symbol] a field name
   # @return [LSolr] a instance
-  def initialize(field = '')
-    @expr_not = ''
-    @field = field.to_s
-    @value = ''
-    @range_first = ''
-    @range_last = ''
-    @boost = ''
+  def initialize(field_name = nil)
+    if field_name.nil?
+      @field = ''
+    else
+      field(field_name)
+    end
+
+    @expr_not = @value = @range_first = @range_last = @boost = @raw = ''
     @left_parentheses = []
     @right_parentheses = []
-    @raw = ''
   end
 
   # Returns Apache Solr standard lucene type query string.
   #
   # @return [String] a stringified query
   def to_s
-    raise IncompleteQueryError, 'Please specify search field and value.' if blank?
+    raise IncompleteQueryError, 'Please specify a term of search.' if blank?
 
     decorate_term_expr_if_needed(build_term_expr)
   end
@@ -193,11 +193,13 @@ class LSolr
 
   # Sets a field name.
   #
-  # @param f [String, Symbol] a field name
+  # @param name [String, Symbol] a field name
   #
   # @return [LSolr] self instance
-  def field(f)
-    @field = f.to_s
+  def field(name)
+    raise ArgumentError, "The field name must be a not empty string value. #{name.inspect} given." unless present_string?(name)
+
+    @field = name.to_s
     self
   end
 
@@ -207,6 +209,8 @@ class LSolr
   #
   # @return [LSolr] self instance
   def raw(q)
+    raise ArgumentError, "The raw query must be a not empty string value. #{q.inspect} given." unless present_string?(q)
+
     @raw = q.to_s
     self
   end
@@ -242,7 +246,8 @@ class LSolr
   #
   # @return [LSolr] self instance
   def boost(factor)
-    raise ArgumentError, "The boost factor number must be positive. #{factor} given." if factor <= 0
+    raise ArgumentError, "The boost factor must be a positive number (0 < n < 1). #{factor.inspect} given." unless valid_boost_factor?(factor)
+
     @boost = "#{BOOST}#{factor}"
     self
   end
@@ -269,7 +274,7 @@ class LSolr
   #
   # @return [LSolr] self instance
   def match_in(values)
-    raise ArgumentError, "#{values.inspect} given. Must be a not empty array." if values.nil? || !values.is_a?(Array) || values.empty?
+    raise ArgumentError, "#{values.inspect} given. It must be a not empty array." unless present_array?(values)
 
     values = values.map { |v| clean(v) }
     @value = "(#{values.join(MULTI_VALUE_MATCH_DELIMITER)})"
@@ -426,6 +431,18 @@ class LSolr
 
   def raw?
     !@raw.empty?
+  end
+
+  def present_string?(v)
+    !v.nil? && (v.is_a?(String) || v.is_a?(Symbol)) && !v.empty?
+  end
+
+  def present_array?(v)
+    !v.nil? && v.is_a?(Array) && !v.compact.empty? && v.map(&:to_s).map(&:empty?).none?
+  end
+
+  def valid_boost_factor?(v)
+    (v.is_a?(Float) || v.is_a?(Integer)) && v > 0 && v < 1
   end
 
   def clean(value, symbols: RESERVED_SYMBOLS)
