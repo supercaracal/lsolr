@@ -113,6 +113,8 @@ class LSolr
       when String then build_raw_query(params)
       else raise TypeError, "Could not build solr query. Please specify a Hash or String value. #{params.inspect} given."
       end
+    rescue TypeError => e
+      raise ArgumentError, "#{e.message} It is not a supported type."
     end
 
     private

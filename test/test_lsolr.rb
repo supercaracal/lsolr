@@ -17,12 +17,12 @@ class TestLSolr < Minitest::Test
     assert_instance_of LSolr, LSolr.build(field1: 'value', field2: true)
     assert_instance_of LSolr, LSolr.build('field1:value AND field2:true')
     assert_instance_of LSolr, LSolr.build(field: [])
-    assert_raises(LSolr::TypeError) { LSolr.build(f: nil) }
-    assert_raises(LSolr::TypeError) { LSolr.build(f: {}) }
-    assert_raises(LSolr::TypeError) { LSolr.build([]) }
-    assert_raises(LSolr::TypeError) { LSolr.build(nil) }
-    assert_raises(LSolr::TypeError) { LSolr.build(0) }
-    assert_raises(LSolr::TypeError) { LSolr.build(0.1) }
+    assert_raises(LSolr::ArgumentError) { LSolr.build(f: nil) }
+    assert_raises(LSolr::ArgumentError) { LSolr.build(f: {}) }
+    assert_raises(LSolr::ArgumentError) { LSolr.build([]) }
+    assert_raises(LSolr::ArgumentError) { LSolr.build(nil) }
+    assert_raises(LSolr::ArgumentError) { LSolr.build(0) }
+    assert_raises(LSolr::ArgumentError) { LSolr.build(0.1) }
   end
 
   def test_initialize
