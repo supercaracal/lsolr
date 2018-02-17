@@ -149,8 +149,8 @@ class LSolr
       new(field).greater_than_or_equal_to(values.first).less_than_or_equal_to(last)
     end
 
-    def build_raw_query(q)
-      q.empty? ? new : new.raw(q)
+    def build_raw_query(query)
+      query.empty? ? new : new.raw(query)
     end
   end
 
@@ -176,7 +176,7 @@ class LSolr
   def to_s
     raise IncompleteQueryError, 'Please specify a term of search.' if blank?
 
-    decorate_term_expr_if_needed(build_term_expr)
+    decorate_linked_expressions_if_needed(build_expression)
   end
 
   alias to_str to_s
@@ -210,13 +210,13 @@ class LSolr
 
   # Sets a raw query.
   #
-  # @param q [String] raw query
+  # @param query [String] a raw query string
   #
   # @return [LSolr] self instance
-  def raw(q)
-    raise ArgumentError, "The raw query must be a not empty string value. #{q.inspect} given." unless present_string?(q)
+  def raw(query)
+    raise ArgumentError, "The raw query must be a not empty string value. #{query.inspect} given." unless present_string?(query)
 
-    @raw = q.to_s
+    @raw = query.to_s
     self
   end
 
@@ -407,7 +407,7 @@ class LSolr
   #
   # @see https://lucene.apache.org/solr/guide/7_1/the-standard-query-parser.html#the-boolean-operator-and The Boolean Operator AND ("&&")
   #
-  # @param another [LSolr] another query builder instance
+  # @param another [LSolr, Hash, String] another query builder instance or query params or raw query string
   #
   # @return [LSolr] copied another query builder instance
   def and(another)
@@ -418,7 +418,7 @@ class LSolr
   #
   # @see https://lucene.apache.org/solr/guide/7_1/the-standard-query-parser.html#boolean-operators-supported-by-the-standard-query-parser Boolean Operators Supported by the Standard Query Parser
   #
-  # @param another [LSolr] another query builder instance
+  # @param another [LSolr, Hash, String] another query builder instance or query params or raw query string
   #
   # @return [LSolr] copied another query builder instance
   def or(another)
@@ -516,7 +516,7 @@ class LSolr
     end
   end
 
-  def build_term_expr
+  def build_expression
     if raw?
       @raw
     elsif range_search?
@@ -526,7 +526,7 @@ class LSolr
     end
   end
 
-  def decorate_term_expr_if_needed(expr)
+  def decorate_linked_expressions_if_needed(expr)
     expr = "#{expr_not}#{left_parentheses.join}#{expr}#{right_parentheses.join}"
     expr = "#{prev} #{operator} #{expr}" if present_query?(prev)
     scoring = present_string?(@constant_score) ? @constant_score : @boost
