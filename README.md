@@ -100,7 +100,7 @@ require 'lsolr'
 ```ruby
 require 'lsolr'
 
-LSolr.build('a:1').and(LSolr.build(b: 2)).to_s
+LSolr.build('a:1').and(b: 2).to_s
 #=> 'a:1 AND b:2'
 ```
 

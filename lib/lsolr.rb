@@ -62,7 +62,7 @@ require 'date'
 #    #=> 'NOT (field:a* OR field:b* OR field:c*)'
 #
 # @example How to use. Part 5:
-#    LSolr.build('a:1').and(LSolr.build(b: 2)).to_s
+#    LSolr.build('a:1').and(b: 2).to_s
 #    #=> 'a:1 AND b:2'
 class LSolr
   ArgumentError = Class.new(::ArgumentError)
@@ -110,7 +110,7 @@ class LSolr
     def build(params)
       case params
       when Hash then params.map { |f, v| build_query(f, v) }.reduce { |a, e| a.and(e) }
-      when String then new.raw(params)
+      when String then build_raw_query(params)
       else raise TypeError, "Could not build solr query. Please specify a Hash or String value. #{params.inspect} given."
       end
     end
@@ -147,6 +147,10 @@ class LSolr
       last = nil
       values.each { |v| last = v }
       new(field).greater_than_or_equal_to(values.first).less_than_or_equal_to(last)
+    end
+
+    def build_raw_query(q)
+      q.empty? ? new : new.raw(q)
     end
   end
 
@@ -495,6 +499,7 @@ class LSolr
   end
 
   def link(another, operator)
+    another = build_instance_if_needed(another)
     return self unless present_query?(another)
 
     another = another.dup
@@ -502,6 +507,13 @@ class LSolr
     head.prev = dup
     head.operator = operator
     another
+  end
+
+  def build_instance_if_needed(another)
+    case another
+    when self.class then another
+    when Hash, String then self.class.build(another)
+    end
   end
 
   def build_term_expr

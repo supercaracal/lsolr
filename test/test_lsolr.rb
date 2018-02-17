@@ -262,6 +262,18 @@ class TestLSolr < Minitest::Test
     assert !term1.equal?(composite)
     assert !term2.equal?(composite)
     assert_equal 'field1:word1 AND field2:word2', composite.to_s
+
+    assert_equal 'f:1 AND g:2', LSolr.build(f: 1).and(g: 2).to_s
+    assert_equal 'f:1 AND g:2', LSolr.build(f: 1).and('g:2').to_s
+
+    assert_equal 'f:1', LSolr.new(:f).match(1).and(nil).to_s
+    assert_equal 'f:1', LSolr.new(:f).match(1).and(:'').to_s
+    assert_equal 'f:1', LSolr.new(:f).match(1).and(0).to_s
+    assert_equal 'f:1', LSolr.new(:f).match(1).and(0.1).to_s
+    assert_equal 'f:1', LSolr.new(:f).match(1).and(false).to_s
+    assert_equal 'f:1', LSolr.new(:f).match(1).and([]).to_s
+    assert_equal 'f:1', LSolr.new(:f).match(1).and({}).to_s
+    assert_equal 'f:1', LSolr.new(:f).match(1).and('').to_s
   end
 
   def test_or
@@ -273,6 +285,18 @@ class TestLSolr < Minitest::Test
     assert !term1.equal?(composite)
     assert !term2.equal?(composite)
     assert_equal 'field1:word1 OR field2:word2', composite.to_s
+
+    assert_equal 'f:1 OR g:2', LSolr.build(f: 1).or(g: 2).to_s
+    assert_equal 'f:1 OR g:2', LSolr.build(f: 1).or('g:2').to_s
+
+    assert_equal 'f:1', LSolr.new(:f).match(1).or(nil).to_s
+    assert_equal 'f:1', LSolr.new(:f).match(1).or(:'').to_s
+    assert_equal 'f:1', LSolr.new(:f).match(1).or(0).to_s
+    assert_equal 'f:1', LSolr.new(:f).match(1).or(0.1).to_s
+    assert_equal 'f:1', LSolr.new(:f).match(1).or(false).to_s
+    assert_equal 'f:1', LSolr.new(:f).match(1).or([]).to_s
+    assert_equal 'f:1', LSolr.new(:f).match(1).or({}).to_s
+    assert_equal 'f:1', LSolr.new(:f).match(1).or('').to_s
   end
 
   def test_constant_score_takes_priority_over_boost_factor
@@ -352,7 +376,7 @@ class TestLSolr < Minitest::Test
   end
 
   def test_can_build_with_raw_queries
-    assert_equal 'a:1 AND b:2', LSolr.build('a:1').and(LSolr.build(b: 2)).to_s
+    assert_equal 'a:1 AND b:2', LSolr.build('a:1').and(b: 2).to_s
   end
 
   def test_can_build_complex_query
