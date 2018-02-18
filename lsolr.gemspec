@@ -4,8 +4,8 @@ Gem::Specification.new do |s|
   s.name        = 'lsolr'
   s.version     = '0.2.3'
   s.date        = '2018-02-18'
-  s.summary     = 'A query builder of Apache Solr for Ruby'
-  s.description = 'LSolr is a query builder of Apache Solr standard Lucene type query for Ruby.'
+  s.summary     = 'A query builder for Apache Solr in Ruby'
+  s.description = 'LSolr is a query builder for Apache Solr in Ruby. It supports only the standard query.'
   s.authors     = ['Taishi Kasuga']
   s.email       = 'supercaracal@yahoo.co.jp'
   s.files       = ['lib/lsolr.rb']

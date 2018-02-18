@@ -5,7 +5,7 @@
 [![Issue Count](https://codeclimate.com/github/supercaracal/lsolr/badges/issue_count.svg)](https://codeclimate.com/github/supercaracal/lsolr/issues)
 
 # LSolr
-LSolr is a query builder of Apache Solr for Ruby. It keeps one direction linked list internally.
+LSolr is a query builder for Apache Solr in Ruby. It keeps one direction linked list internally.
 
 ```
 term = field:value = a LSolr instance
@@ -109,3 +109,10 @@ LSolr.build('a:1').and(b: 2).to_s
 * [RSolr](https://github.com/rsolr/rsolr)
 * [Ruby Doc](http://www.rubydoc.info/github/supercaracal/lsolr/LSolr)
 * [Gem Guide](http://guides.rubygems.org/make-your-own-gem/)
+
+## Motivation
+
+We trying to use this gem in web service of our company.  
+Our search component has complex features.  
+So we should implement as polymorphic class each search parameters.  
+We think this gem fit in implementation like that.
