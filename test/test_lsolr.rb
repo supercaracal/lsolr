@@ -223,15 +223,29 @@ class TestLSolr < Minitest::Test
     assert_equal 'field:"word1 word2"', LSolr.new(:field).phrase_match(%w[word1 word2]).to_s
     assert_equal 'field:"word1 word2"~10', LSolr.new(:field).phrase_match(%w[word1 word2], distance: 10).to_s
     assert_equal 'field:"boo foo woo"~10', LSolr.new(:field).phrase_match(%w[boo&foo woo], distance: 10).to_s
+    assert_equal 'field:"word1 word2"', LSolr.new(:field).phrase_match(%w[word1 word2], distance: '').to_s
+    assert_equal 'field:"word1 word2"', LSolr.new(:field).phrase_match(%w[word1 word2], distance: :'').to_s
+    assert_equal 'field:"word1 word2"', LSolr.new(:field).phrase_match(%w[word1 word2], distance: nil).to_s
+    assert_equal 'field:"word1 word2"', LSolr.new(:field).phrase_match(%w[word1 word2], distance: false).to_s
+    assert_equal 'field:"word1 word2"', LSolr.new(:field).phrase_match(%w[word1 word2], distance: []).to_s
+    assert_equal 'field:"word1 word2"', LSolr.new(:field).phrase_match(%w[word1 word2], distance: {}).to_s
+    assert_equal 'field:"word1 word2"', LSolr.new(:field).phrase_match(%w[word1 word2], distance: 0).to_s
+    assert_equal 'field:"word1 word2"', LSolr.new(:field).phrase_match(%w[word1 word2], distance: -1).to_s
   end
 
   def test_fuzzy_match
     assert_equal 'field:word~0.0', LSolr.new(:field).fuzzy_match('word', distance: 0.0).to_s
     assert_equal 'field:word~2.0', LSolr.new(:field).fuzzy_match('word', distance: 2.0).to_s
     assert_equal 'field:word~2.0', LSolr.new(:field).fuzzy_match('word').to_s
-    assert_raises(LSolr::RangeError) { LSolr.new(:field).fuzzy_match('word', distance: -0.1).to_s }
-    assert_raises(LSolr::RangeError) { LSolr.new(:field).fuzzy_match('word', distance: 2.1).to_s }
     assert_equal 'field:word~2.0', LSolr.new(:field).fuzzy_match('wo|rd').to_s
+    assert_raises(LSolr::ArgumentError) { LSolr.new(:field).fuzzy_match('word', distance: -0.1) }
+    assert_raises(LSolr::ArgumentError) { LSolr.new(:field).fuzzy_match('word', distance: 2.1) }
+    assert_raises(LSolr::ArgumentError) { LSolr.new(:field).fuzzy_match('word', distance: '') }
+    assert_raises(LSolr::ArgumentError) { LSolr.new(:field).fuzzy_match('word', distance: :'') }
+    assert_raises(LSolr::ArgumentError) { LSolr.new(:field).fuzzy_match('word', distance: nil) }
+    assert_raises(LSolr::ArgumentError) { LSolr.new(:field).fuzzy_match('word', distance: false) }
+    assert_raises(LSolr::ArgumentError) { LSolr.new(:field).fuzzy_match('word', distance: []) }
+    assert_raises(LSolr::ArgumentError) { LSolr.new(:field).fuzzy_match('word', distance: {}) }
   end
 
   def test_range_search

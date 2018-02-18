@@ -66,7 +66,6 @@ require 'date'
 #    #=> 'a:1 AND b:2'
 class LSolr
   ArgumentError = Class.new(::ArgumentError)
-  RangeError = Class.new(::RangeError)
   TypeError = Class.new(::TypeError)
   IncompleteQueryError = Class.new(StandardError)
 
@@ -116,7 +115,7 @@ class LSolr
       case params
       when Hash then params.map { |f, v| build_query(f, v) }.reduce { |a, e| a.and(e) }
       when String then build_raw_query(params)
-      else raise TypeError, "Could not build solr query. Please specify a Hash or String value. #{params.inspect} given."
+      else raise TypeError, "Could not build solr query. Please specify a Hash or String value. `#{params}` given."
       end
     rescue TypeError => e
       raise ArgumentError, "#{e.message} It is not a supported type."
@@ -132,7 +131,7 @@ class LSolr
       when Array then build_array_query(field, value)
       when Range then build_range_query(field, value)
       when Enumerator then build_enumerator_query(field, value)
-      else raise TypeError, "Could not build solr query. field: #{field.inspect}, value: #{value.inspect} given."
+      else raise TypeError, "Could not build solr query. field: `#{field}`, value: `#{value}` given."
       end
     end
 
@@ -220,7 +219,7 @@ class LSolr
   #
   # @raise [LSolr::ArgumentError] if specified field name is empty
   def field(name)
-    raise ArgumentError, "The field name must be a not empty string value. #{name.inspect} given." unless present_string?(name)
+    raise ArgumentError, "The field name must be a not empty string value. `#{name}` given." unless present_string?(name)
 
     @field = name.to_s
     self
@@ -234,7 +233,7 @@ class LSolr
   #
   # @raise [LSolr::ArgumentError] if specified raw query string is empty
   def raw(query)
-    raise ArgumentError, "The raw query must be a not empty string value. #{query.inspect} given." unless present_string?(query)
+    raise ArgumentError, "The raw query must be a not empty string value. `#{query}` given." unless present_string?(query)
 
     @raw = query.to_s
     self
@@ -273,7 +272,7 @@ class LSolr
   #
   # @raise [LSolr::ArgumentError] if specified boost factor is invalid
   def boost(factor)
-    raise ArgumentError, "The boost factor must be a positive number. #{factor.inspect} given." unless valid_boost_factor?(factor)
+    raise ArgumentError, "The boost factor must be a positive number. `#{factor}` given." unless valid_boost_factor?(factor)
 
     @boost = "#{BOOST}#{factor}"
     self
@@ -289,7 +288,7 @@ class LSolr
   #
   # @raise [LSolr::ArgumentError] if specified score number is invalid
   def constant_score(score)
-    raise ArgumentError, "The constant score must be a number. #{score.inspect} given." unless valid_score?(score)
+    raise ArgumentError, "The constant score must be a number. `#{score}` given." unless valid_score?(score)
 
     @constant_score = "#{CONSTANT_SCORE}#{score}"
     self
@@ -319,7 +318,7 @@ class LSolr
   #
   # @raise [LSolr::ArgumentError] if specified value is a empty array or not array
   def match_in(values)
-    raise ArgumentError, "#{values.inspect} given. It must be a not empty array." unless present_array?(values)
+    raise ArgumentError, "`#{values}` given. It must be a not empty array." unless present_array?(values)
 
     values = values.map { |v| clean(v) }
     @value = "(#{values.join(DELIMITER_SPACE)})"
@@ -362,7 +361,7 @@ class LSolr
   # @return [LSolr] self instance
   def phrase_match(values, distance: 0)
     value = values.map { |v| clean(v).split }.flatten.join(DELIMITER_SPACE)
-    proximity_match = distance > 0 ? "#{PROXIMITY}#{distance}" : ''
+    proximity_match = distance.to_s.to_i > 0 ? "#{PROXIMITY}#{distance}" : ''
     @value = %("#{value}"#{proximity_match})
     self
   end
@@ -376,9 +375,9 @@ class LSolr
   #
   # @return [LSolr] self instance
   #
-  # @raise [LSolr::RangeError] if specified distance is out of range
+  # @raise [LSolr::ArgumentError] if specified distance is out of range
   def fuzzy_match(value, distance: 2.0)
-    raise RangeError, "Out of #{RANGE_FUZZY_MATCH_DISTANCE}. #{distance} given." unless RANGE_FUZZY_MATCH_DISTANCE.member?(distance)
+    raise ArgumentError, "Out of #{RANGE_FUZZY_MATCH_DISTANCE}. `#{distance}` given." unless valid_fuzzy_match_distance?(distance)
     @value = "#{clean(value).split.join}#{PROXIMITY}#{distance}"
     self
   end
@@ -500,6 +499,10 @@ class LSolr
     v.is_a?(Float) || v.is_a?(Integer)
   end
 
+  def valid_fuzzy_match_distance?(v)
+    (v.is_a?(Float) || v.is_a?(Integer)) && RANGE_FUZZY_MATCH_DISTANCE.member?(v)
+  end
+
   def clean(value, symbols: RESERVED_SYMBOLS)
     value.to_s
          .tr(symbols.join, REPLACEMENT_CHAR)
@@ -518,7 +521,7 @@ class LSolr
     msec_str = case date
                when Date then date.strftime(FORMAT_MILLISECOND_FOR_DATE_TYPE).gsub(date.strftime(FORMAT_SECOND), '')
                when Time then date.strftime(FORMAT_MILLISECOND_FOR_TIME_TYPE)
-               else raise TypeError, "Could not format dates or times. Given value: #{date.inspect}"
+               else raise TypeError, "Could not format dates or times. `#{date}` given."
                end
 
     return date.strftime(FORMAT_DATE_TIME) if msec_str == '000'
