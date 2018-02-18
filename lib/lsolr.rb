@@ -84,9 +84,11 @@ class LSolr
   PROXIMITY = '~'
   BOOST = '^'
   CONSTANT_SCORE = '^='
-  PHRASE_MATCH_DELIMITER = ' '
-  MULTI_VALUE_MATCH_DELIMITER = ' '
-  FUZZY_MATCH_DISTANCE_RANGE = (0.0..2.0).freeze
+
+  DELIMITER_SPACE = ' '
+
+  RANGE_FUZZY_MATCH_DISTANCE = (0.0..2.0).freeze
+
   FORMAT_DATE_TIME = '%Y-%m-%dT%H:%M:%SZ'
   FORMAT_MILLISECOND_FOR_DATE_TYPE = '%Q'
   FORMAT_MILLISECOND_FOR_TIME_TYPE = '%L'
@@ -320,7 +322,7 @@ class LSolr
     raise ArgumentError, "#{values.inspect} given. It must be a not empty array." unless present_array?(values)
 
     values = values.map { |v| clean(v) }
-    @value = "(#{values.join(MULTI_VALUE_MATCH_DELIMITER)})"
+    @value = "(#{values.join(DELIMITER_SPACE)})"
     self
   end
 
@@ -359,7 +361,7 @@ class LSolr
   #
   # @return [LSolr] self instance
   def phrase_match(values, distance: 0)
-    value = values.map { |v| clean(v).split }.flatten.join(PHRASE_MATCH_DELIMITER)
+    value = values.map { |v| clean(v).split }.flatten.join(DELIMITER_SPACE)
     proximity_match = distance > 0 ? "#{PROXIMITY}#{distance}" : ''
     @value = %("#{value}"#{proximity_match})
     self
@@ -376,7 +378,7 @@ class LSolr
   #
   # @raise [LSolr::RangeError] if specified distance is out of range
   def fuzzy_match(value, distance: 2.0)
-    raise RangeError, "Out of #{FUZZY_MATCH_DISTANCE_RANGE}. #{distance} given." unless FUZZY_MATCH_DISTANCE_RANGE.member?(distance)
+    raise RangeError, "Out of #{RANGE_FUZZY_MATCH_DISTANCE}. #{distance} given." unless RANGE_FUZZY_MATCH_DISTANCE.member?(distance)
     @value = "#{clean(value).split.join}#{PROXIMITY}#{distance}"
     self
   end
