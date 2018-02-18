@@ -77,15 +77,24 @@ require 'lsolr'
 
 bool1 = LSolr.new(:bool_field).match(true)
 bool2 = LSolr.new(:bool_field).match(false)
-date1 = LSolr.new(:date_field1).greater_than_or_equal_to('*').less_than_or_equal_to(Time.new(2000, 6, 30, 23, 59, 59))
-date2 = LSolr.new(:date_field2).greater_than(Time.new(2000, 7, 1, 0, 0, 0)).less_than(Time.new(2001, 1, 1, 0, 0, 0))
+date1 = LSolr.new(:date_field1)
+             .greater_than_or_equal_to('*')
+             .less_than_or_equal_to(Time.new(2000, 6, 30, 23, 59, 59))
+date2 = LSolr.new(:date_field2)
+             .greater_than(Time.new(2000, 7, 1, 0, 0, 0))
+             .less_than(Time.new(2001, 1, 1, 0, 0, 0))
 
 left = bool1.and(date1).and(date2).wrap
 right = bool2.and(date1.or(date2).wrap).wrap
 
 left.or(right).to_s
-#=> '(bool_field:true AND date_field1:[* TO 2000-06-30T23:59:59Z] AND date_field2:{2000-07-01T00:00:00Z TO 2001-01-01T00:00:00Z})
-#    OR (bool_field:false AND (date_field1:[* TO 2000-06-30T23:59:59Z] OR date_field2:{2000-07-01T00:00:00Z TO 2001-01-01T00:00:00Z}))'
+#=> '(bool_field:true
+#      AND date_field1:[* TO 2000-06-30T23:59:59Z]
+#      AND date_field2:{2000-07-01T00:00:00Z TO 2001-01-01T00:00:00Z})
+#    OR
+#    (bool_field:false
+#      AND (date_field1:[* TO 2000-06-30T23:59:59Z]
+#        OR date_field2:{2000-07-01T00:00:00Z TO 2001-01-01T00:00:00Z}))'
 ```
 
 ```ruby
