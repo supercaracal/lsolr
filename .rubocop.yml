@@ -21,5 +21,8 @@ Metrics/LineLength:
 Style/NumericPredicate:
   Enabled: false
 
+Style/FormatStringToken:
+  Enabled: false
+
 Gemspec/RequiredRubyVersion:
   Enabled: false

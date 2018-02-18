@@ -87,10 +87,10 @@ class LSolr
   PHRASE_MATCH_DELIMITER = ' '
   MULTI_VALUE_MATCH_DELIMITER = ' '
   FUZZY_MATCH_DISTANCE_RANGE = (0.0..2.0).freeze
-  FORMAT_DATE_TIME = '%Y-%m-%dT%H:%M:%SZ' # rubocop:disable Style/FormatStringToken
+  FORMAT_DATE_TIME = '%Y-%m-%dT%H:%M:%SZ'
   FORMAT_MILLISECOND_FOR_DATE_TYPE = '%Q'
   FORMAT_MILLISECOND_FOR_TIME_TYPE = '%L'
-  FORMAT_SECOND = '%s' # rubocop:disable Style/FormatStringToken
+  FORMAT_SECOND = '%s'
   FORMAT_INSPECT = '#<%<class>s:%<object>#018x `%<query>s`>'
 
   PARENTHESIS_LEFT = '('
@@ -135,9 +135,7 @@ class LSolr
     end
 
     def build_array_query(field, values)
-      return new(field) if values.empty?
-
-      new(field).match_in(values)
+      values.empty? ? new(field) : new(field).match_in(values)
     end
 
     def build_range_query(field, value)
@@ -523,7 +521,7 @@ class LSolr
 
     return date.strftime(FORMAT_DATE_TIME) if msec_str == '000'
 
-    "#{date.strftime('%Y-%m-%dT%H:%M:%S')}.#{msec_str}Z" # rubocop:disable Style/FormatStringToken
+    "#{date.strftime('%Y-%m-%dT%H:%M:%S')}.#{msec_str}Z"
   end
 
   def link(another, operator)
