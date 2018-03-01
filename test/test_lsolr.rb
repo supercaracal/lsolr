@@ -44,7 +44,6 @@ class TestLSolr < Minitest::Test
     assert_raises(LSolr::IncompleteQueryError) { LSolr.new.to_s }
     assert_raises(LSolr::IncompleteQueryError) { LSolr.new(nil).to_s }
     assert_raises(LSolr::IncompleteQueryError) { LSolr.new(:field).to_s }
-    assert_raises(LSolr::IncompleteQueryError) { LSolr.new(:field).match('').to_s }
     assert_raises(LSolr::IncompleteQueryError) { LSolr.new(:field).greater_than_or_equal_to(0).to_s }
     assert_raises(LSolr::IncompleteQueryError) { LSolr.new(:field).less_than_or_equal_to(0).to_s }
   end
@@ -64,7 +63,6 @@ class TestLSolr < Minitest::Test
     assert_equal true, LSolr.new(nil).blank?
     assert_equal true, LSolr.new(:field).blank?
     assert_equal false, LSolr.new(:field).match('word').blank?
-    assert_equal true, LSolr.new(:field).match('').blank?
     assert_equal false, LSolr.new(:field).greater_than(0).less_than_or_equal_to(1).blank?
     assert_equal true, LSolr.new(:field).greater_than_or_equal_to(0).blank?
     assert_equal true, LSolr.new(:field).greater_than(0).blank?
@@ -78,7 +76,6 @@ class TestLSolr < Minitest::Test
     assert_equal false, LSolr.new(nil).present?
     assert_equal false, LSolr.new(:field).present?
     assert_equal true, LSolr.new(:field).match('word').present?
-    assert_equal false, LSolr.new(:field).match('').present?
     assert_equal true, LSolr.new(:field).greater_than_or_equal_to(0).less_than(1).present?
     assert_equal false, LSolr.new(:field).greater_than_or_equal_to(0).present?
     assert_equal false, LSolr.new(:field).greater_than(0).present?
@@ -187,6 +184,16 @@ class TestLSolr < Minitest::Test
     assert_equal 'field:"Tiffany Co."', LSolr.new(:field).match('Tiffany&Co.').to_s
     assert_equal 'field:\\NOTword\\ANDword\\ORword', LSolr.new(:field).match('NOTwordANDwordORword').to_s
     assert_equal 'field:not1and2or3', LSolr.new(:field).match('not1and2or3').to_s
+    assert_equal 'field:a', LSolr.new(:field).match(:a).to_s
+    assert_equal 'field:1', LSolr.new(:field).match(1).to_s
+    assert_equal 'field:true', LSolr.new(:field).match(true).to_s
+    assert_equal 'field:false', LSolr.new(:field).match(false).to_s
+    assert_equal 'field:(1 2)', LSolr.new(:field).match([1, 2]).to_s
+    assert_equal 'field:"2000-01-01T12:00:00Z"', LSolr.new(:field).match(Time.new(2000, 1, 1, 12, 0, 0)).to_s
+    assert_equal 'field:"2000-01-01T00:00:00Z"', LSolr.new(:field).match(Date.new(2000, 1, 1)).to_s
+    assert_raises(LSolr::ArgumentError) { LSolr.new(:field).match(nil) }
+    assert_raises(LSolr::ArgumentError) { LSolr.new(:field).match('') }
+    assert_raises(LSolr::ArgumentError) { LSolr.new(:field).match(:'') }
   end
 
   def test_match_in
@@ -194,6 +201,7 @@ class TestLSolr < Minitest::Test
     assert_equal 'field:(a b c)', LSolr.new(:field).match_in(%w[a b c]).to_s
     assert_equal 'field:(a b c)', LSolr.new(:field).match_in(%i[a b c]).to_s
     assert_equal 'field:(true false)', LSolr.new(:field).match_in([true, false]).to_s
+    assert_equal 'field:1', LSolr.new(:field).match_in([1]).to_s
     assert_raises(LSolr::ArgumentError) { LSolr.new(:field).match_in(nil) }
     assert_raises(LSolr::ArgumentError) { LSolr.new(:field).match_in('') }
     assert_raises(LSolr::ArgumentError) { LSolr.new(:field).match_in(:'') }

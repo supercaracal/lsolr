@@ -299,7 +299,13 @@ class LSolr
   # @param value [String, Integer, true, false] a search word or a filter value
   #
   # @return [LSolr] self instance
+  #
+  # @raise [LSolr::ArgumentError] if specified value is empty
   def match(value)
+    raise ArgumentError, "`#{value}` given. It must be a not empty value." unless present_string?(value.to_s)
+    return match_in(value) if value.is_a?(Array)
+    return date_time_match(value) if value.is_a?(Date) || value.is_a?(Time)
+
     values = clean(value).split
 
     if values.size > 1
@@ -319,6 +325,7 @@ class LSolr
   # @raise [LSolr::ArgumentError] if specified value is a empty array or not array
   def match_in(values)
     raise ArgumentError, "`#{values}` given. It must be a not empty array." unless present_array?(values)
+    return match(values.first) if values.size == 1
 
     values = values.map { |v| clean(v) }
     @value = "(#{values.join(DELIMITER_SPACE)})"
