@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    lsolr (0.2.4)
+    lsolr (0.2.5)
 
 GEM
   remote: https://rubygems.org/
@@ -13,7 +13,7 @@ GEM
     json (2.1.0)
     minitest (5.11.3)
     parallel (1.12.1)
-    parser (2.5.0.0)
+    parser (2.5.0.2)
       ast (~> 2.4.0)
     powerpack (0.1.1)
     rainbow (3.0.0)
