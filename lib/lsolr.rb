@@ -486,28 +486,28 @@ class LSolr
     !@raw.empty?
   end
 
-  def present_string?(v)
-    !v.nil? && (v.is_a?(String) || v.is_a?(Symbol)) && !v.empty?
+  def present_string?(val)
+    !val.nil? && (val.is_a?(String) || val.is_a?(Symbol)) && !val.empty?
   end
 
-  def present_array?(v)
-    !v.nil? && v.is_a?(Array) && !v.compact.empty? && v.map(&:to_s).map(&:empty?).none?
+  def present_array?(val)
+    !val.nil? && val.is_a?(Array) && !val.compact.empty? && val.map(&:to_s).map(&:empty?).none?
   end
 
-  def present_query?(v)
-    !v.nil? && v.present?
+  def present_query?(val)
+    !val.nil? && val.present?
   end
 
-  def valid_boost_factor?(v)
-    (v.is_a?(Float) || v.is_a?(Integer)) && v > 0
+  def valid_boost_factor?(val)
+    (val.is_a?(Float) || val.is_a?(Integer)) && val > 0
   end
 
-  def valid_score?(v)
-    v.is_a?(Float) || v.is_a?(Integer)
+  def valid_score?(val)
+    val.is_a?(Float) || val.is_a?(Integer)
   end
 
-  def valid_fuzzy_match_distance?(v)
-    (v.is_a?(Float) || v.is_a?(Integer)) && RANGE_FUZZY_MATCH_DISTANCE.member?(v)
+  def valid_fuzzy_match_distance?(val)
+    (val.is_a?(Float) || val.is_a?(Integer)) && RANGE_FUZZY_MATCH_DISTANCE.member?(val)
   end
 
   def clean(value, symbols: RESERVED_SYMBOLS)
