@@ -98,7 +98,7 @@ class LSolr
   PARENTHESIS_RIGHT = ')'
 
   RESERVED_SYMBOLS = %w(- + & | ! ( ) { } [ ] ^ " ~ * ? : \\\\ /).freeze
-  RESERVED_WORDS = /(AND|OR|NOT)/
+  RESERVED_WORDS = /(AND|OR|NOT)/.freeze
   REPLACEMENT_CHAR = ' '
 
   attr_accessor :prev, :operator, :left_parentheses, :right_parentheses, :expr_not
@@ -385,6 +385,7 @@ class LSolr
   # @raise [LSolr::ArgumentError] if specified distance is out of range
   def fuzzy_match(value, distance: 2.0)
     raise ArgumentError, "Out of #{RANGE_FUZZY_MATCH_DISTANCE}. `#{distance}` given." unless valid_fuzzy_match_distance?(distance)
+
     @value = "#{clean(value).split.join}#{PROXIMITY}#{distance}"
     self
   end
