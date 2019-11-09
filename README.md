@@ -121,7 +121,7 @@ LSolr.build('a:1').and(b: 2).to_s
 
 ## Motivation
 
-We trying to use this gem in web service of our company.  
+We are trying to use this gem in web service of our company.  
 Our search component has complex features.  
 So we should implement as polymorphic class each search parameters.  
 We think this gem fit in implementation like that.
