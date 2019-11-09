@@ -1,11 +1,5 @@
 # frozen_string_literal: true
 
-require 'simplecov'
-SimpleCov.start do
-  add_filter '/.bundle/'
-  add_filter '/test/'
-end
-
 require 'minitest/autorun'
 require 'time'
 require 'lsolr'
