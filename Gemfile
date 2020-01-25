@@ -8,3 +8,4 @@ gem 'lsolr', path: './'
 gem 'minitest'
 gem 'rake'
 gem 'rubocop'
+gem 'rubocop-performance', require: false

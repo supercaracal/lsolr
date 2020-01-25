@@ -1,7 +1,5 @@
-[![Build Status](https://travis-ci.org/supercaracal/lsolr.svg?branch=master)](https://travis-ci.org/supercaracal/lsolr)
-[![Gem Version](https://badge.fury.io/rb/lsolr.svg)](https://badge.fury.io/rb/lsolr)
-
-# LSolr
+LSolr [![](https://badge.fury.io/rb/lsolr.svg)](https://badge.fury.io/rb/lsolr) ![](https://github.com/supercaracal/lsolr/workflows/CI/badge.svg) ![](https://github.com/supercaracal/lsolr/workflows/CD/badge.svg)
+=====================
 LSolr is a query builder for Apache Solr in Ruby. It keeps one direction linked list internally.
 
 ```

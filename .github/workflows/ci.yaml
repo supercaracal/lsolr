@@ -1,0 +1,32 @@
+---
+name: CI
+on: [push]
+jobs:
+  test:
+    name: Test
+    timeout-minutes: 30
+    strategy:
+      matrix:
+        os: ["ubuntu-latest"]
+        rb-ver: ["2.4", "2.5", "2.6", "2.7"]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v2
+
+      - name: Set up Ruby
+        uses: actions/setup-ruby@v1
+        with:
+          ruby-version: ${{ matrix.rb-ver }}.x
+
+      - name: Set up Gems
+        run: |
+          gem update --system
+          gem install bundler
+          bundle install --jobs 4 --retry 3 --path=.bundle
+
+      - name: Test
+        run: bundle exec rake test
+
+      - name: Lint
+        run: bundle exec rubocop
