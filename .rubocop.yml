@@ -17,7 +17,7 @@ Metrics/MethodLength:
   Exclude:
     - 'test/**/*'
 
-Metrics/LineLength:
+Layout/LineLength:
   Max: 200
 
 Style/NumericPredicate:
