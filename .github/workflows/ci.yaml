@@ -1,6 +1,12 @@
 ---
 name: CI
-on: [push]
+on:
+  push:
+    branches:
+      - "*"
+  pull_request:
+    branches:
+      - "*"
 jobs:
   test:
     name: Test
@@ -8,7 +14,7 @@ jobs:
     strategy:
       matrix:
         os: ["ubuntu-latest"]
-        rb-ver: ["2.4", "2.5", "2.6", "2.7"]
+        ruby: ["2.4", "2.5", "2.6", "2.7"]
     runs-on: ${{ matrix.os }}
     steps:
       - name: Check out code
@@ -17,12 +23,12 @@ jobs:
       - name: Set up Ruby
         uses: actions/setup-ruby@v1
         with:
-          ruby-version: ${{ matrix.rb-ver }}.x
+          ruby-version: ${{ matrix.ruby }}
 
       - name: Set up Gems
         run: |
-          gem update --system
-          gem install bundler
+          gem update --system --no-document
+          gem install bundler --no-document
           bundle install --jobs 4 --retry 3 --path=.bundle
 
       - name: Test
