@@ -123,7 +123,7 @@ class LSolr
 
     private
 
-    def build_query(field, value) # rubocop:disable Metrics/CyclomaticComplexity
+    def build_query(field, value)
       case value
       when String, Symbol, Integer, Float, true, false then new(field).match(value)
       when Date, Time then new(field).date_time_match(value)
