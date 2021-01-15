@@ -11,7 +11,7 @@ jobs:
     strategy:
       matrix:
         os: ["ubuntu-latest"]
-        rb-ver: ["2.7"]
+        rb-ver: ["3.0"]
     runs-on: ${{ matrix.os }}
     steps:
       - name: Check out code
