@@ -5,6 +5,7 @@ require: rubocop-performance
 AllCops:
   TargetRubyVersion: 2.7
   DisplayCopNames: true
+  NewCops: enable
 
 Metrics/AbcSize:
   Exclude:
