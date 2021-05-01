@@ -3,7 +3,6 @@
 Gem::Specification.new do |s|
   s.name        = 'lsolr'
   s.version     = '1.0.1'
-  s.date        = '2020-01-25'
   s.summary     = 'A query builder for Apache Solr in Ruby'
   s.description = 'LSolr is a query builder for Apache Solr in Ruby. It supports only the standard query.'
   s.authors     = ['Taishi Kasuga']
