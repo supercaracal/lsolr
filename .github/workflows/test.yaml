@@ -1,0 +1,107 @@
+---
+name: Test
+on:
+  push:
+    branches:
+      - "*"
+  pull_request:
+    branches:
+      - "*"
+jobs:
+  lint:
+    name: Lint
+    timeout-minutes: 5
+    strategy:
+      fail-fast: false
+      matrix:
+        os: ["ubuntu-latest"]
+        ruby: ["3.1"]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v3
+      - name: Set up Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: ${{ matrix.ruby }}
+          bundler-cache: true
+      - name: Rubocop
+        run: bundle exec rake rubocop
+  main-test:
+    name: Main Test
+    timeout-minutes: 5
+    strategy:
+      fail-fast: false
+      matrix:
+        os: ["ubuntu-latest"]
+        ruby: ["2.7", "3.0", "3.1"]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v3
+      - name: Set up Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: ${{ matrix.ruby }}
+          bundler-cache: true
+      - name: Test
+        run: bundle exec rake test
+  sub-test:
+    name: Sub Test
+    timeout-minutes: 5
+    strategy:
+      fail-fast: false
+      matrix:
+        os: ["ubuntu-latest"]
+        ruby: ["2.4", "2.5", "2.6"]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v3
+      - name: Set up Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: ${{ matrix.ruby }}
+          bundler-cache: true
+      - name: Update
+        run: gem update --system
+      - name: Test
+        run: bundle exec rake test
+  benchmark:
+    name: Benchmark
+    timeout-minutes: 5
+    strategy:
+      fail-fast: false
+      matrix:
+        os: ["ubuntu-latest"]
+        ruby: ["3.1"]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v3
+      - name: Set up Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: ${{ matrix.ruby }}
+          bundler-cache: true
+      - name: Benchmark
+        run: bundle exec rake bench
+  profile:
+    name: Profile
+    timeout-minutes: 5
+    strategy:
+      fail-fast: false
+      matrix:
+        os: ["ubuntu-latest"]
+        ruby: ["3.1"]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v3
+      - name: Set up Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: ${{ matrix.ruby }}
+          bundler-cache: true
+      - name: Profile
+        run: bundle exec rake prof
