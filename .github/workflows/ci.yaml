@@ -1,5 +1,5 @@
 ---
-name: CI
+name: Test
 on:
   push:
     branches:
@@ -8,31 +8,57 @@ on:
     branches:
       - "*"
 jobs:
-  test:
-    name: Test
-    timeout-minutes: 30
+  lint:
+    name: Lint
+    timeout-minutes: 5
     strategy:
       matrix:
         os: ["ubuntu-latest"]
-        ruby: ["2.4", "2.5", "2.6", "2.7", "3.0"]
+        ruby: ["3.1"]
     runs-on: ${{ matrix.os }}
     steps:
       - name: Check out code
-        uses: actions/checkout@v2
-
+        uses: actions/checkout@v3
       - name: Set up Ruby
         uses: ruby/setup-ruby@v1
         with:
           ruby-version: ${{ matrix.ruby }}
-
-      - name: Set up Gems
-        run: |
-          gem update --system --no-document
-          gem install bundler --no-document
-          bundle install --jobs 4 --retry 3
-
-      - name: Test
-        run: bundle exec rake test
-
+          bundler-cache: true
       - name: Lint
         run: bundle exec rubocop
+  main:
+    name: Main
+    timeout-minutes: 5
+    strategy:
+      matrix:
+        os: ["ubuntu-latest"]
+        ruby: ["2.7", "3.0", "3.1"]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v3
+      - name: Set up Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: ${{ matrix.ruby }}
+          bundler-cache: true
+      - name: Test
+        run: bundle exec rake test
+  sub:
+    name: Sub
+    timeout-minutes: 5
+    strategy:
+      matrix:
+        os: ["ubuntu-latest"]
+        ruby: ["2.5", "2.6"]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v3
+      - name: Set up Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: ${{ matrix.ruby }}
+          bundler-cache: true
+      - name: Test
+        run: bundle exec rake test

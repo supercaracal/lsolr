@@ -1,10 +1,9 @@
 # frozen_string_literal: true
 
 source 'https://rubygems.org'
+gemspec name: 'lsolr'
 
-git_source(:github) { |repo_name| "https://github.com/#{repo_name}" }
-
-gem 'lsolr', path: './'
+gem 'memory_profiler'
 gem 'minitest'
 gem 'rake'
 gem 'rubocop'

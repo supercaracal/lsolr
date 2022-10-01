@@ -1,5 +1,8 @@
 ---
-require: rubocop-performance
+require:
+  - rubocop-performance
+  - rubocop-rake
+  - rubocop-minitest
 
 # https://rubocop.readthedocs.io/en/latest/
 AllCops:
@@ -12,11 +15,23 @@ Metrics/AbcSize:
     - 'test/**/*'
 
 Metrics/ClassLength:
-  Max: 400
+  Max: 500
+
+Metrics/ModuleLength:
+  Max: 500
 
 Metrics/MethodLength:
+  Max: 50
   Exclude:
     - 'test/**/*'
+
+Metrics/BlockLength:
+  Max: 40
+  Exclude:
+    - 'test/**/*'
+
+Metrics/ParameterLists:
+  Max: 10
 
 Layout/LineLength:
   Max: 200

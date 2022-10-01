@@ -53,29 +53,29 @@ class TestLSolr < Minitest::Test
   end
 
   def test_blank?
-    assert_equal true, LSolr.new.blank?
-    assert_equal true, LSolr.new(nil).blank?
-    assert_equal true, LSolr.new(:field).blank?
-    assert_equal false, LSolr.new(:field).match('word').blank?
-    assert_equal false, LSolr.new(:field).greater_than(0).less_than_or_equal_to(1).blank?
-    assert_equal true, LSolr.new(:field).greater_than_or_equal_to(0).blank?
-    assert_equal true, LSolr.new(:field).greater_than(0).blank?
-    assert_equal true, LSolr.new(:field).less_than_or_equal_to(0).blank?
-    assert_equal true, LSolr.new(:field).less_than(0).blank?
-    assert_equal false, LSolr.new.raw('field:value').blank?
+    assert_predicate LSolr.new, :blank?
+    assert_predicate LSolr.new(nil), :blank?
+    assert_predicate LSolr.new(:field), :blank?
+    refute_predicate LSolr.new(:field).match('word'), :blank?
+    refute_predicate LSolr.new(:field).greater_than(0).less_than_or_equal_to(1), :blank?
+    assert_predicate LSolr.new(:field).greater_than_or_equal_to(0), :blank?
+    assert_predicate LSolr.new(:field).greater_than(0), :blank?
+    assert_predicate LSolr.new(:field).less_than_or_equal_to(0), :blank?
+    assert_predicate LSolr.new(:field).less_than(0), :blank?
+    refute_predicate LSolr.new.raw('field:value'), :blank?
   end
 
   def test_present?
-    assert_equal false, LSolr.new.present?
-    assert_equal false, LSolr.new(nil).present?
-    assert_equal false, LSolr.new(:field).present?
-    assert_equal true, LSolr.new(:field).match('word').present?
-    assert_equal true, LSolr.new(:field).greater_than_or_equal_to(0).less_than(1).present?
-    assert_equal false, LSolr.new(:field).greater_than_or_equal_to(0).present?
-    assert_equal false, LSolr.new(:field).greater_than(0).present?
-    assert_equal false, LSolr.new(:field).less_than_or_equal_to(0).present?
-    assert_equal false, LSolr.new(:field).less_than(0).present?
-    assert_equal true, LSolr.new.raw('field:value').present?
+    refute_predicate LSolr.new, :present?
+    refute_predicate LSolr.new(nil), :present?
+    refute_predicate LSolr.new(:field), :present?
+    assert_predicate LSolr.new(:field).match('word'), :present?
+    assert_predicate LSolr.new(:field).greater_than_or_equal_to(0).less_than(1), :present?
+    refute_predicate LSolr.new(:field).greater_than_or_equal_to(0), :present?
+    refute_predicate LSolr.new(:field).greater_than(0), :present?
+    refute_predicate LSolr.new(:field).less_than_or_equal_to(0), :present?
+    refute_predicate LSolr.new(:field).less_than(0), :present?
+    assert_predicate LSolr.new.raw('field:value'), :present?
   end
 
   def test_field
@@ -111,7 +111,7 @@ class TestLSolr < Minitest::Test
     assert_equal '(((field:word)))', LSolr.new(:field).match('word').wrap.wrap.wrap.to_s
 
     instance = LSolr.new(:field).match('word')
-    assert !instance.equal?(instance.wrap)
+    refute instance.equal?(instance.wrap)
 
     incomplete_term = LSolr.new(:dummy)
     term = LSolr.new(:field).match('word')
@@ -281,8 +281,8 @@ class TestLSolr < Minitest::Test
     composite = term1.and(term2)
 
     assert_instance_of LSolr, composite
-    assert !term1.equal?(composite)
-    assert !term2.equal?(composite)
+    refute term1.equal?(composite)
+    refute term2.equal?(composite)
     assert_equal 'field1:word1 AND field2:word2', composite.to_s
 
     assert_equal 'f:1 AND g:2', LSolr.build(f: 1).and(g: 2).to_s
@@ -304,8 +304,8 @@ class TestLSolr < Minitest::Test
     composite = term1.or(term2)
 
     assert_instance_of LSolr, composite
-    assert !term1.equal?(composite)
-    assert !term2.equal?(composite)
+    refute term1.equal?(composite)
+    refute term2.equal?(composite)
     assert_equal 'field1:word1 OR field2:word2', composite.to_s
 
     assert_equal 'f:1 OR g:2', LSolr.build(f: 1).or(g: 2).to_s
@@ -346,20 +346,20 @@ class TestLSolr < Minitest::Test
     }
 
     expected =
-      'field01:hoge AND '\
-      'field02:fuga AND '\
-      'field03:14 AND '\
-      'field04:7.3 AND '\
-      'field05:true AND '\
-      'field06:false AND '\
-      'field07:"7000-07-01T00:00:00Z" AND '\
-      'field08:"6000-05-31T06:31:43Z" AND '\
-      'field09:"5000-06-30T12:59:03Z" AND '\
-      'field10:foo~2.0 AND '\
-      'field11:(1 2 3) AND '\
-      'field12:[1 TO 10] AND '\
-      'field13:[20 TO 40} AND '\
-      'field14:[3000-01-01T00:00:00Z TO 4000-12-31T00:00:00Z] AND '\
+      'field01:hoge AND ' \
+      'field02:fuga AND ' \
+      'field03:14 AND ' \
+      'field04:7.3 AND ' \
+      'field05:true AND ' \
+      'field06:false AND ' \
+      'field07:"7000-07-01T00:00:00Z" AND ' \
+      'field08:"6000-05-31T06:31:43Z" AND ' \
+      'field09:"5000-06-30T12:59:03Z" AND ' \
+      'field10:foo~2.0 AND ' \
+      'field11:(1 2 3) AND ' \
+      'field12:[1 TO 10] AND ' \
+      'field13:[20 TO 40} AND ' \
+      'field14:[3000-01-01T00:00:00Z TO 4000-12-31T00:00:00Z] AND ' \
       'field15:[3.0 TO 4.0]'
 
     assert_equal expected, LSolr.build(params).to_s
@@ -384,8 +384,8 @@ class TestLSolr < Minitest::Test
     right = bool2.and(date1.or(date2).wrap).wrap
 
     expected =
-      '(bool_field:true AND date_field1:[* TO 2000-06-30T23:59:59Z] AND date_field2:{2000-07-01T00:00:00Z TO 2001-01-01T00:00:00Z})'\
-      ' OR (bool_field:false AND (date_field1:[* TO 2000-06-30T23:59:59Z] OR date_field2:{2000-07-01T00:00:00Z TO 2001-01-01T00:00:00Z}))'
+      '(bool_field:true AND date_field1:[* TO 2000-06-30T23:59:59Z] AND date_field2:{2000-07-01T00:00:00Z TO 2001-01-01T00:00:00Z}) ' \
+      'OR (bool_field:false AND (date_field1:[* TO 2000-06-30T23:59:59Z] OR date_field2:{2000-07-01T00:00:00Z TO 2001-01-01T00:00:00Z}))'
 
     assert_equal expected, left.or(right).to_s
   end
