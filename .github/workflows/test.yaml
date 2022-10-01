@@ -24,10 +24,10 @@ jobs:
         with:
           ruby-version: ${{ matrix.ruby }}
           bundler-cache: true
-      - name: Lint
-        run: bundle exec rubocop
-  main:
-    name: Main
+      - name: Rubocop
+        run: bundle exec rake rubocop
+  main-test:
+    name: Main Test
     timeout-minutes: 5
     strategy:
       matrix:
@@ -44,13 +44,13 @@ jobs:
           bundler-cache: true
       - name: Test
         run: bundle exec rake test
-  sub:
-    name: Sub
+  sub-test:
+    name: Sub Test
     timeout-minutes: 5
     strategy:
       matrix:
         os: ["ubuntu-latest"]
-        ruby: ["2.5", "2.6"]
+        ruby: ["2.4", "2.5", "2.6"]
     runs-on: ${{ matrix.os }}
     steps:
       - name: Check out code
@@ -62,3 +62,39 @@ jobs:
           bundler-cache: true
       - name: Test
         run: bundle exec rake test
+  benchmark:
+    name: Benchmark
+    timeout-minutes: 5
+    strategy:
+      matrix:
+        os: ["ubuntu-latest"]
+        ruby: ["3.1"]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v3
+      - name: Set up Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: ${{ matrix.ruby }}
+          bundler-cache: true
+      - name: Benchmark
+        run: bundle exec rake bench
+  profile:
+    name: Profile
+    timeout-minutes: 5
+    strategy:
+      matrix:
+        os: ["ubuntu-latest"]
+        ruby: ["3.1"]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v3
+      - name: Set up Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: ${{ matrix.ruby }}
+          bundler-cache: true
+      - name: Profile
+        run: bundle exec rake prof
