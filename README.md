@@ -2,7 +2,8 @@ LSolr
 [![Gem Version](https://badge.fury.io/rb/lsolr.svg)](https://badge.fury.io/rb/lsolr)
 ![Test Status](https://github.com/supercaracal/lsolr/workflows/Test/badge.svg?branch=master)
 =====================
-LSolr is a query builder for Apache Solr in Ruby. It keeps one direction linked list internally.
+LSolr is a query builder for Apache Solr in Ruby.
+It keeps one direction linked list internally.
 
 ```
 term = field:value = a LSolr instance
@@ -12,8 +13,10 @@ term = field:value = a LSolr instance
 term <-- term <-- term <-- ... <-- term
 ```
 
-It supports only [the standard query](https://lucene.apache.org/solr/guide/7_2/the-standard-query-parser.html).
-It isn't Apache Solr client. It has only feature as query builder. Please use it with [RSolr](https://github.com/rsolr/rsolr).
+It supports only [standard query](https://lucene.apache.org/solr/guide/7_2/the-standard-query-parser.html).
+It isn't a client for Apache Solr.
+It has only features as a query builder.
+Please use it with [RSolr](https://github.com/rsolr/rsolr).
 
 ## Installation
 
