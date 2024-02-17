@@ -2,6 +2,7 @@
 
 require 'rake/testtask'
 require 'rubocop/rake_task'
+require 'bundler/gem_helper'
 
 task default: :test
 
@@ -29,3 +30,4 @@ Rake::TestTask.new(:prof) do |t|
 end
 
 RuboCop::RakeTask.new
+Bundler::GemHelper.install_tasks
